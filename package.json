@@ -4,9 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon server.js",
-    "start": "NODE_ENV=production node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "NODE_ENV=development nodemon server/index.js",
+    "lint": "eslint **/*.js",
+    "precommit": "npm run lint && npm test",
+    "start": "NODE_ENV=production node server/index.js",
+    "test": "mocha --reporter=nyan spec/*.spec.js",
+    "test:watch": "npm test -- --watch"
   },
   "repository": {
     "type": "git",
@@ -25,5 +28,9 @@
     "express": "^4.14.0",
     "mongoose": "^4.7.6",
     "morgan": "^1.7.0"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "husky": "^0.12.0"
   }
 }
