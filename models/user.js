@@ -1,7 +1,9 @@
 const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 const bcrypt = require('bcrypt-nodejs');
 
-const userSchema = new mongoose.Schema({
+
+const userSchema = new Schema({
   username: {
     type: String,
     unique: true
@@ -14,7 +16,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'https://avatar3.githubusercontent.com/u/6791502?v=3&s=200'
   },
-  password: String
+  cohort: {
+    type: Schema.Types.ObjectId
+  },
+  password: {
+    type: String,
+    required: true
+  },
+  role: {
+    type: String,
+    enum: ['staff', 'student'],
+    default: 'student',
+    required: true
+  }
 });
 
 userSchema.pre('save', function (next) {

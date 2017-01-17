@@ -1,7 +1,7 @@
 const async = require('async');
 const models = require('../models/models');
 
-const user = new models.Users({
+const user = new models.User({
   username: 'northcoder',
   name: 'Awesome Northcoder',
   avatar_url: 'https://avatars3.githubusercontent.com/u/6791502?v=3&s=200',
