@@ -45,4 +45,11 @@ describe('Api Routes', function () {
       });
     });
   });
+  describe('GET /wrongRoute', function () {
+    it('return error message if client hits wrong route', function (done) {
+      request(ROOT)
+      .get('/wrongRoute')
+      .expect(404, {"message": "Uh-oh! You are at the wrong address! Much love from Dave, Amanda, Tague and Zoe"}, done)
+    });
+  });
 });

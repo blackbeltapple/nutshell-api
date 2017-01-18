@@ -32,12 +32,12 @@ describe('Authentication Routes', function () {
       done();
     });
   });
-  
+
   after(function (done) {
     mongoose.connection.db.dropDatabase();
     done();
   });
-  
+
   describe('GET / route', function () {
     it('permits access to the / route to all users', function (done) {
       request(ROOT)

@@ -46,6 +46,19 @@ app.get('/loggedin', requireAuth, function (req, res) {
 app.post('/signup', Authentication.signup);
 app.post('/signin', requireSignin, Authentication.signin);
 
+// Error handling routes
+
+app.use('/*', function (req, res) {
+  return res.status(404).json({"message": "Uh-oh! You are at the wrong address! Much love from Dave, Amanda, Tague and Zoe"});
+});
+
+app.use(function (err, req, res, next) {
+  if (err) {
+    return res.status(500).json({error: 'Database error - ' + err})
+  }
+  next()
+});
+
 app.listen(PORT, function (err) {
   if (err) console.log(err); // eslint-disable-line no-console
   console.log(`Listening on port ${PORT}...`); // eslint-disable-line no-console
