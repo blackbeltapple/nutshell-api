@@ -1,5 +1,5 @@
 const async = require('async');
-const models = require('../models/models');
+const models = require('../models');
 
 const user = new models.User({
   username: 'northcoder',
@@ -8,16 +8,40 @@ const user = new models.User({
   password: 'manda'
 });
 
-function saveUser (cb) {
-  user.save(cb)
+function saveUser (waterfallCallback) {
+  user.save(function (err, user) {
+    if (err) return waterfallCallback(err);
+    waterfallCallback(null, user);
+  });
 }
 
-function saveTestData (cb) {
-  async.waterfall([saveUser], (err, ids) => {
+const event = new models.Event({
+  title: 'Redux',
+  start_date: ('October 27, 2016, 09:30:00'),
+  end_date: ('October 27, 2016 10:30:00'),
+  description: 'Lecture on Redux',
+  event_type: 'lecture',
+  repo: 'https://github.com/northcoders/student-portal-api',
+  lecturer: 'Chris Hill',
+  all_day: false
+});
+
+function saveEvent (user, waterfallCallback) {
+  event.save(function (err, event) {
+    if (err) waterfallCallback(err)
+    else waterfallCallback(null, {user, event})
+  });
+}
+
+function saveTestData (done) {
+  async.waterfall([
+    saveUser,
+    saveEvent
+  ], (err, data) => {
     if (err) console.log(err); // eslint-disable-line no-console
     else {
       console.log('Test data seeded successfully.'); // eslint-disable-line no-console
-      cb(ids);
+      done(data);
     }
   });
 }

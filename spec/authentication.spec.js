@@ -1,42 +1,43 @@
-/* eslint-env mocha, before, describe, it, xit */
-
-// The purpose of this test suite is to test that the API is behaving
-// correctly in terms of what it is sending back to the client. It is
-// NOT to interrogate the database and check that items have been added
-// and deleted.  We are just testing that the RESPONSE is correct, i.e.
-// the status code/number,
-// the length of res.body,
-// the content of res.body,
-// that res.body contains the correct keys. We need to test that PUT and
-// POST requests return the new/editted data to the client - this
-// is convention. The client should receive the new full mongo document.
-// They may well need the _id that the DB created.
-// We can also test that the schemas are working correctly
-// -------------------------------------------------------------
-
-// These env vars must be set before anything else
-process.env.NODE_ENV = 'test';
-const PORT = require('../config.js').PORT[process.env.NODE_ENV];
-const ROOT = `localhost:${PORT}`;
-
 const request = require('supertest');
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 const saveTestData = require('../seed/test.seed.js');
+const config = require('../config.js');
+
+process.env.NODE_ENV = 'test';
 require('../server/index.js');
+const PORT = config.PORT[process.env.NODE_ENV];
+const ROOT = `localhost:${PORT}`;
+
+/**
+ * The purpose of this test suite is to test that the API is behaving
+ * correctly in terms of what it is sending back to the client. It is
+ * NOT to interrogate the database and check that items have been added
+ * and deleted.  We are just testing that the RESPONSE is correct, i.e.
+ * the status code/number,
+ * the length of res.body,
+ * the content of res.body,
+ * that res.body contains the correct keys. We need to test that PUT and
+ * POST requests return the new/editted data to the client - this
+ * is convention. The client should receive the new full mongo document.
+ * They may well need the _id that the DB created.
+ * We can also test that the schemas are working correctly
+ */
 
 describe('Authentication Routes', function () {
-  // the before 'hook' runs before the whole test suite
   before(function (done) {
-    mongoose.connection.once('connected', function () {
-      mongoose.connection.db.dropDatabase();
-      console.log('db dropped'); // eslint-disable-line no-console
-      saveTestData(function () {
-        done();
-      });
+    mongoose.connection.db.dropDatabase();
+    console.log('db dropped') // eslint-disable-line no-console
+    saveTestData(function () {
+      done();
     });
   });
-
+  
+  after(function (done) {
+    mongoose.connection.db.dropDatabase();
+    done();
+  });
+  
   describe('GET / route', function () {
     it('permits access to the / route to all users', function (done) {
       request(ROOT)
@@ -144,10 +145,5 @@ describe('Authentication Routes', function () {
           done();
         });
     });
-  });
-
-  after(function (done) {
-    mongoose.connection.db.dropDatabase();
-    done();
   });
 });

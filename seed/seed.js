@@ -1,7 +1,7 @@
 if (!process.env.NODE_ENV) process.env.NODE_ENV = 'dev';
 
 const async = require('async');
-const models = require('../models/models');
+const models = require('../models');
 const mongoose = require('mongoose');
 
 const credentials = require('../credentials');

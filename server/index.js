@@ -9,7 +9,8 @@ const passport = require('passport');
 
 const credentials = require('../credentials');
 const config = require('../config');
-const Authentication = require('../controllers/authentication.controller');
+const {Authentication} = require('../controllers');
+const apiRouter = require('../routes/api.router');
 
 require('../services/passport');
 
@@ -30,6 +31,7 @@ mongoose.connect(DB, function (err) {
 app.use(morgan('dev'));
 app.use(cors());
 app.use(bodyParser.json({type: '*/*'}));
+app.use('/api', apiRouter);
 
 app.get('/', function (req, res) {
   res.send({message: 'It works!'});

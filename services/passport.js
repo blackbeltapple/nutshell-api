@@ -1,9 +1,10 @@
 const passport = require('passport');
-const User = require('../models/user');
-const {secret} = require('../credentials');
 const JwtStrategy = require('passport-jwt').Strategy;
 const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local');
+
+const {User} = require('../models');
+const {secret} = require('../credentials');
 
 const jwtOptions = {
   secretOrKey: secret,

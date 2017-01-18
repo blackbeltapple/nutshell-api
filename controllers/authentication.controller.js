@@ -10,7 +10,7 @@ function tokenForUser (user) {
   }, secret);
 }
 
-exports.signup = function (req, res, next) {
+const signup = function signup (req, res, next) {
   const {username, name, password} = req.body;
   if (!username || !name || !password) {
     return res.status(422).send({
@@ -34,10 +34,14 @@ exports.signup = function (req, res, next) {
   });
 };
 
-exports.signin = function (req, res) {
+const signin = function signin (req, res) {
   const {username, name, avatar_url} = req.user;
   res.send({
     token: tokenForUser(req.user),
     user: {username, name, avatar_url}
   });
+};
+
+module.exports = {
+  signin, signup
 };
