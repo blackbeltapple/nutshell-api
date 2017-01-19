@@ -7,11 +7,24 @@ let resourceSchema = new Schema({
     enum : ['snippet', 'file', 'link'],
     required: true
   },
-  resource_id :{
-    type: Schema.Types.ObjectId
-  },
   tags: {
     type: [Schema.Types.ObjectId]
+  },
+  filename: {
+    type: String,
+    required: false
+  },
+  url: {
+    type: String,
+    required: false
+  },
+  text: {
+    type: String,
+    required: false
+  },
+  description: {
+    type: String,
+    required: false
   }
 });
 

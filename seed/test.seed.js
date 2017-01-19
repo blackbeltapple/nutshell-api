@@ -16,8 +16,9 @@ function saveTag (user, waterfallCallback) {
 function saveResource (user, tag, waterfallCallback) {
   const resource = new models.Resource({
     type: 'snippet',
-    tags: tag._id
-  })
+    text: 'var bodyParser = require(body-parser)',
+    tags: [tag._id]
+  });
   resource.save(function (err, resource) {
     if (err) return waterfallCallback(err);
     waterfallCallback(null, {user, tag, resource});

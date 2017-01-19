@@ -7,10 +7,8 @@ const mongoose = require('mongoose');
 const credentials = require('../credentials');
 const eventData = require('./data/event.data');
 const tagData = require('./data/tag.data');
-const fileData = require('./data/file.data.js')
-const resourceData = require('./data/resource.data');
 const cohortData = require('./data/cohorts.data');
-// const mixedData = require('./data/files_snippets_links.data');
+const resourceData = require('./data/resource.data');
 
 const DB = credentials.DB[process.env.NODE_ENV];
 
@@ -23,7 +21,6 @@ mongoose.connect(DB, function (err) {
     async.waterfall([
       saveStudent,
       saveStaff,
-      addData,
       addTags,
       addResources,
       addCohorts,
@@ -69,25 +66,7 @@ function saveStaff (cb) {
   });
 }
 
-function addData (done) {
-  async.mapSeries(fileData, function (data, cb) {
-      var fileDoc = new models.File(data);
-      fileDoc.save(function (err, file) {
-        // console.log(arguments)
-        if (err) {
-          return cb(err);
-         }
-        //  console.log(file)
-        return cb(null, file)
-      })
-    }, function (error, files) {
-      if (error) return done(error)
-      console.log('Files saved successfully') // eslint-disable-line no-console
-      return done(null, files)
-  });
-}
-
-function addTags (files, done) {
+function addTags (done) {
   async.map(tagData, function (tag, cb) {
     var tagDoc = new models.Tag(tag);
     tagDoc.save(function (err, data) {
@@ -97,17 +76,16 @@ function addTags (files, done) {
   }, function (err, tags) {
     if (err) return done(err);
     console.log('Tags saved successfully'); // eslint-disable-line no-console
-    return done(null, files, tags)
+    return done(null, tags)
   })
 }
 
-function addResources (files, theTags, done) {
-  async.map(resourceData, function (resource, cb) {
-    var resourceDoc = new models.Resource({
-      type: resource.type,
-      resource_id: files[2]._id,
-      tags: [theTags[1]._id, theTags[3]._id]
-    });
+function addResources (theTags, done) {
+  const resources = resourceData.map(r => Object.assign(r, {
+    tags: [theTags[1]._id, theTags[3]._id]
+  }));
+  async.map(resources, function (resource, cb) {
+    var resourceDoc = new models.Resource(resource);
     resourceDoc.save(function (err, data) {
       if (err) return cb(err);
       return cb(null, data)
