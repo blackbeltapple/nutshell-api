@@ -1,5 +1,6 @@
 module.exports = {
   Events: require('./events.controller'),
   Authentication: require('./authentication.controller'),
-  Tags: require('./tags.controller')
+  Tags: require('./tags.controller'),
+  Resources: require('./resources.controller')
 };

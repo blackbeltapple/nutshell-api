@@ -1,4 +1,5 @@
 const slugify = require('../helpers/slug');
+const asyncMap = require('async/mapSeries');
 
 const Tag = require('../models/tag');
 const validator = require('../helpers/validation/validator');
@@ -32,7 +33,20 @@ function addTag (req, res, next) {
   })
 }
 
+function getTagsById (tag_ids, cb) {
+  asyncMap(tag_ids, function (tag_id, cbMap) {
+      Tag.findById(tag_id, {__v: 0}, function (err, tag) {
+        if (err) return cbMap(err);
+        cbMap(null, tag.toObject());
+      });
+    }, function (err, tags) {
+      if (err) return cb(err);
+      cb(null, tags);
+    });
+}
+
 module.exports = {
   getTags,
-  addTag
+  addTag,
+  getTagsById
 }

@@ -1,5 +1,5 @@
 const express = require('express');
-const {Events, Tags} = require('../controllers');
+const {Events, Tags, Resources} = require('../controllers');
 
 const router = express.Router();
 
@@ -33,5 +33,12 @@ router.get('/tags', function (req, res, next) {
 });
 
 router.post('/tags', Tags.addTag);
+
+router.get('/resources', function (req, res, next) {
+  Resources.getAllResources(function (err, resources) {
+    if (err) return next(err);
+    res.json({resources});
+  });
+});
 
 module.exports = router;

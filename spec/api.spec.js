@@ -64,4 +64,22 @@ describe('Api Routes', function () {
       });
     });
   });
+  describe('GET /api/resources', function () {
+    it('responds with a 200 and an array of resources', function (done) {
+      request(ROOT)
+      .get('/api/resources')
+      .expect(200)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.body.resources[0].type).to.equal('snippet');
+        expect(res.body.resources[0].text).to.equal('Lorem ipsum');
+        expect(res.body.resources[0].url).to.equal('http://www.bbc.co.uk');
+        expect(res.body.resources[0].description).to.equal('Excellent snippet');
+        expect(res.body.resources[0].filename).to.equal('file.jpg');
+        expect(res.body.resources[0].tags[0].title).to.equal('Redux');
+        expect(res.body.resources[0].tags[0].slug).to.equal('redux');
+        done();
+      });
+    });
+  })
 });
