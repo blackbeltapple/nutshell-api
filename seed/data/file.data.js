@@ -14,13 +14,13 @@ module.exports = [
   {
     filename: 'Eight',
     link: 'eight.jpeg'
-  },
-  {
-    filename: 'Ball Image',
-    link: 'ball.jpeg'
-  },
-  {
-    filename: 'XYZ',
-    link: 'canyoulendmeaquid.jpeg'
   }
+  // {
+  //   filename: 'Ball Image',
+  //   link: 'ball.jpeg'
+  // },
+  // {
+  //   filename: 'XYZ',
+  //   link: 'canyoulendmeaquid.jpeg'
+  // }
 ]

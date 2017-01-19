@@ -5,7 +5,7 @@ const saveTestData = require('../seed/test.seed.js');
 const config = require('../config.js');
 
 process.env.NODE_ENV = 'test';
-require('../server/index.js');
+require('../server');
 const PORT = config.PORT[process.env.NODE_ENV];
 const ROOT = `localhost:${PORT}`;
 
@@ -31,6 +31,10 @@ describe('Authentication Routes', function () {
     saveTestData(function () {
       done();
     });
+  });
+  after(function (done) {
+    mongoose.connection.db.dropDatabase();
+    done();
   });
 
   after(function (done) {

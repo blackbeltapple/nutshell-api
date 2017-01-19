@@ -53,10 +53,17 @@ app.use('/*', function (req, res) {
 });
 
 app.use(function (err, req, res, next) {
+  if (err.name === 'Validation') {
+    return res.status(422).json({err: err.message});
+  }
+  next(err);
+})
+
+app.use(function (err, req, res, next) {
   if (err) {
     return res.status(500).json({error: 'Database error - ' + err})
   }
-  next()
+  next();
 });
 
 app.listen(PORT, function (err) {
