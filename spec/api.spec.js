@@ -53,6 +53,13 @@ describe('Api Routes', function () {
         expect(Date(res.body.event.start_date)).to.equal(Date('October 27, 2016, 09:30:00'));
         expect(Date(res.body.event.end_date)).to.equal(Date('October 27, 2016 10:30:00'));
         expect(res.body.event.all_day).to.equal(false);
+        expect(res.body.event.resources[0].type).to.equal('snippet');
+        expect(res.body.event.resources[0].text).to.equal('Lorem ipsum');
+        expect(res.body.event.resources[0].url).to.equal('http://www.bbc.co.uk');
+        expect(res.body.event.resources[0].description).to.equal('Excellent snippet');
+        expect(res.body.event.resources[0].filename).to.equal('file.jpg');
+        expect(res.body.event.resources[0].tags[0].title).to.equal('Redux');
+        expect(res.body.event.resources[0].tags[0].slug).to.equal('redux');
         done();
       });
     });

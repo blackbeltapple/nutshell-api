@@ -16,8 +16,11 @@ function saveTag (user, waterfallCallback) {
 function saveResource (user, tag, waterfallCallback) {
   const resource = new models.Resource({
     type: 'snippet',
-    text: 'var bodyParser = require(body-parser)',
-    tags: [tag._id]
+    text: 'Lorem ipsum',
+    tags: [tag._id],
+    url: 'http://www.bbc.co.uk',
+    description: 'Excellent snippet',
+    filename: 'file.jpg'
   });
   resource.save(function (err, resource) {
     if (err) return waterfallCallback(err);
