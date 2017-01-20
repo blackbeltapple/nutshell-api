@@ -33,7 +33,6 @@ describe('Api Routes', function () {
     });
   });
   let event_id;
-  let newEvent;
   describe('GET /api/events', function () {
     it('return an array of event objects', function (done) {
       request(ROOT)
@@ -145,7 +144,7 @@ describe('Api Routes', function () {
     let modifiedTitle = 'Modified title'
     it('modifies the title of an existing event and returns status 200', function (done) {
       request(ROOT)
-        .put('/api/events/' + newEvent)
+        .put('/api/events/' + event_id)
         .send({title: modifiedTitle, start_date, end_date, description, event_type, repo, all_day, lecturer})
         .expect(200)
         .end(function (err, res) {

@@ -55,23 +55,12 @@ function editEvent(event_id, event, sendToRouter) {
     err.name = 'Validation';
     return sendToRouter(err)
   }
-
-<<<<<<< HEAD
   Event.findByIdAndUpdate(event_id, {$set: event}, {new: true}, function (err, event) {
     if (err) return sendToRouter(err);
     if (!event) return sendToRouter(new Error('Event not found')); // TODO: error handle this properly
     event = event.toObject();
-=======
-  // Query database to find correct event
-  Event.findByIdAndUpdate(event_id, {$set: event}, {new: false}, function (err, event) {
-    if (err) return sendToRouter(err);
-    if (!event) return sendToRouter(new Error('Event not found')); // TODO: error handle this properly
-    event = event.toObject();
-    console.log('event is ', event)
->>>>>>> 3ecbcc8... Basic PUT / events/:event_id route now working - needs testing and more validation
     sendToRouter(null, event)
   });
-
 }
 
 module.exports = {
