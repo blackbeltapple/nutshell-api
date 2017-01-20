@@ -7,6 +7,15 @@ const mongoose = require('mongoose');
 const expect = require('chai').expect;
 const saveTestData = require('../seed/test.seed.js');
 
+const title = 'SASS';
+const start_date = 'October 27, 2016, 10:30:00';
+const end_date = 'October 27, 2016, 12:30:00';
+const description = 'Lecture on SASS';
+const event_type = 'lecture';
+const repo = 'http://github.com/northcoders/sass-lecture';
+const all_day = true;
+const lecturer = 'Chris Hill';
+
 describe('Api Routes', function () {
   before(function (done) {
     mongoose.connection.once('connected', function () {
@@ -84,4 +93,47 @@ describe('Api Routes', function () {
       });
     });
   })
+  describe('POST /api/events', function () {
+    it('adds a new event to the database', function (done) {
+      request(ROOT)
+      .post('/api/events')
+      .send({title, start_date, end_date, description, event_type, repo, all_day, lecturer})
+      .expect(200)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.body.event.title).to.equal(title)
+        expect(res.body.event.start_date).to.equal('2016-10-27T09:30:00.000Z')
+        expect(res.body.event.end_date).to.equal('2016-10-27T11:30:00.000Z')
+        expect(res.body.event.description).to.equal(description)
+        expect(res.body.event.event_type).to.equal(event_type)
+        expect(res.body.event.repo).to.equal(repo)
+        expect(res.body.event.all_day).to.equal(all_day)
+        expect(res.body.event.lecturer).to.equal(lecturer)
+        done();
+      });
+    });
+    it('should throw a 422 if a property that is meant to be a string is a different data type', function (done) {
+      let wrongTitle = 45;
+      request(ROOT)
+      .post('/api/events')
+      .send({title: wrongTitle, start_date, end_date, description, event_type, repo, all_day, lecturer})
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err);
+        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
+        done();
+      })
+    })
+    it('should throw a 406 if the a required property is missing', function (done) {
+      request(ROOT)
+      .post('/api/events')
+      .send({start_date, end_date, description, event_type, repo, all_day, lecturer})
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err);
+        expect(res.error.text).to.equal('{"err":"You must enter a title, start date, end date and a event type"}');
+        done();
+        });
+      });
+    });
 });

@@ -4,7 +4,7 @@ const {Events, Tags, Resources} = require('../controllers');
 const router = express.Router();
 
 /****************************************
-  /events  - GET ALL EVENTS
+  /events  - GET ALL EVENTS & POST EVENT
 *****************************************/
 router.get('/events', function (req, res) {
   Events.getAllEvents(function (err, events) {
@@ -19,6 +19,14 @@ router.get('/events/:id', function (req, res, next) {
   Events.getEvent(id, function (err, event) {
     if (err) return next(err);  // TODO: error handle this properly
     res.status(200).json({event});
+  });
+});
+
+router.post('/events', function (req, res, next) {
+  const event = req.body;
+  Events.addEvent(event, function (err, event) {
+    if (err) return next(err);
+    res.status(200).json({event})
   });
 });
 

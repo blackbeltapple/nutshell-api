@@ -1,5 +1,6 @@
 const {Event} = require('../models');
 const {getResourcesById} = require('./resources.controller');
+const validator = require('../helpers/validation/validator');
 
 function getAllEvents (sendToRouter) {
   Event.find({}, {resources: 0, repo: 0, cohort: 0, description: 0, __v: 0}, function (err, events) {
@@ -20,6 +21,25 @@ function getEvent(id, sendToRouter) {
   });
 }
 
+function addEvent(details, cb) {
+  let requiredDetails = [details.title, details.description, details.repo, details.event_type, details.lecturer]
+  if (!details.title || !details.start_date ||!details.end_date || !details.event_type) {
+    const err = new Error('You must enter a title, start date, end date and a event type');
+    err.name = 'Validation';
+    return cb(err);
+  }
+  if (!validator.checkArrString(requiredDetails)) {
+    const err = new Error('Title, description, repo and lecturer must be a string');
+    err.name = 'Validation';
+    return cb(err)
+  }
+  const newEvent = new Event(details);
+  newEvent.save(function (err, event) {
+    if (err) return cb(err)
+    cb(null, event)
+  });
+}
+
 module.exports = {
-  getAllEvents, getEvent
+  getAllEvents, getEvent, addEvent
 };
