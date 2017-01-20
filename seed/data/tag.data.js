@@ -42,5 +42,20 @@ module.exports = [
   {
     title: 'Mongoose',
     slug: 'mongoose'
+  },
+  {
+    title: 'Reference',
+    slug: 'reference',
+    category: 'Type'
+  },
+  {
+    title: 'Core Reading',
+    slug: 'core-reading',
+    category: 'Type'
+  },
+  {
+    title: 'Further Reading',
+    slug: 'further-reading',
+    category: 'Type'
   }
 ]

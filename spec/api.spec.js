@@ -60,6 +60,7 @@ describe('Api Routes', function () {
         expect(res.body.event.resources[0].filename).to.equal('file.jpg');
         expect(res.body.event.resources[0].tags[0].title).to.equal('Redux');
         expect(res.body.event.resources[0].tags[0].slug).to.equal('redux');
+        expect(res.body.event.resources[0].tags[0].category).to.equal('Topic');
         done();
       });
     });
@@ -78,6 +79,7 @@ describe('Api Routes', function () {
         expect(res.body.resources[0].filename).to.equal('file.jpg');
         expect(res.body.resources[0].tags[0].title).to.equal('Redux');
         expect(res.body.resources[0].tags[0].slug).to.equal('redux');
+        expect(res.body.resources[0].tags[0].category).to.equal('Topic');
         done();
       });
     });

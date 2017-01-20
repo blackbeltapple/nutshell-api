@@ -3,7 +3,8 @@ const models = require('../models');
 
 const tag = new models.Tag({
   title: 'Redux',
-  slug: 'redux'
+  slug: 'redux',
+  category: 'Topic'
 })
 
 function saveTag (user, waterfallCallback) {

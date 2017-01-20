@@ -11,6 +11,11 @@ const tagSchema = new Schema({
     lowercase: true,
     required: true,
     unique: true
+  },
+  category: {
+    type: String,
+    enum: ['Type', 'Topic'],
+    default: 'Topic'
   }
 });
 
