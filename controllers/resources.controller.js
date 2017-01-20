@@ -57,9 +57,9 @@ function addResource (event_id, resource, sendToRouter) {
   newResource.save(function(err, resource){
     if (err) return sendToRouter(err);
     // Add this new resource oid to the event 'resources' array
-    Event.findByIdAndUpdate(event_id, 
-      {$addToSet: {resources: resource._id }}, 
-      {new: true}, 
+    Event.findByIdAndUpdate(event_id,
+      {$addToSet: {resources: resource._id }},
+      {new: true},
       function (err, event) {
         if (err) return sendToRouter(err);
         // Mongoose always creates an empty array in resources field, so no need to check that the .resources attrib exists
@@ -88,13 +88,14 @@ function editResource (resource_id, resource, sendToRouter) {
   if (type === 'snippet'){
     if (!resource.text || !validator.isString(resource.text)) return sendToRouter(validator.buildError('Validation', 'Snippet text required'));
   }
-
   // If all input fields are valid, look for the resource in DB
   Resource.findByIdAndUpdate(resource_id, {$set: resource}, {new: true}, function (err, modifiedResource) {
     if (err) return sendToRouter(err);
     sendToRouter(null, modifiedResource)
   });
 }
+
+
 
 module.exports = {
   getAllResources, getResourcesById, addResource, editResource
