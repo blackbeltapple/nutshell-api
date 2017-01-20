@@ -18,7 +18,7 @@ router.get('/events/:id', function (req, res, next) {
   if (!id) return next(new Error('Missing parameter')); // TODO: error handle this properly
   Events.getEvent(id, function (err, event) {
     if (err) return next(err);  // TODO: error handle this properly
-    res.json({event});
+    res.status(200).json({event});
   });
 });
 
@@ -37,8 +37,20 @@ router.post('/tags', Tags.addTag);
 router.get('/resources', function (req, res, next) {
   Resources.getAllResources(function (err, resources) {
     if (err) return next(err);
-    res.json({resources});
+    res.status(200).json({resources});
   });
 });
+
+/*******************************************
+/resources - POST resources
+/*********************************************/
+router.post('/resources/resource', function (req, res, next) {
+  var resource = req.body;
+  Resources.addResource(resource, function (err, resource) {
+    if (err) return next(err);
+    res.status(200).json({resource});
+  })
+})
+
 
 module.exports = router;
