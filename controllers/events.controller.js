@@ -38,6 +38,9 @@ function addEvent(details, cb) {
   }
   const newEvent = new Event(details);
   newEvent.save(function (err, event) {
+    if (event.event_type === 'sprint' || event.event_type === 'weekend review') {
+      event.all_day = true;
+    }
     if (err) return cb(err)
     cb(null, event)
   });

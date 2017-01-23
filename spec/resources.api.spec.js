@@ -38,7 +38,7 @@ describe('POST /events/:id/resources', function () {
     request(ROOT)
     .post('/api/events')
     .send({title, start_date, end_date, description: e_description, event_type, repo, all_day, lecturer})
-    .expect(200)
+    .expect(201)
     .end(function (err, res) {
       if (err) return done(err)
       newEvent = res.body.event._id;

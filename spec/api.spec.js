@@ -102,7 +102,7 @@ describe('Api Routes', function () {
       request(ROOT)
       .post('/api/events')
       .send({title, start_date, end_date, description, event_type, repo, all_day, lecturer})
-      .expect(200)
+      .expect(201)
       .end(function (err, res) {
         if (err) return done(err)
         newEvent = res.body.event._id;
@@ -141,7 +141,6 @@ describe('Api Routes', function () {
       });
     });
   });
-
   describe('PUT /events/:id route', function () {
     let modifiedTitle = 'Modified title'
     it('modifies the title of an existing event and returns status 200', function (done) {
@@ -163,5 +162,4 @@ describe('Api Routes', function () {
         });
     });
   });
-
 });

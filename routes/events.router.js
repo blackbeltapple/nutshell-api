@@ -13,7 +13,7 @@ router.post('/', function (req, res, next) {
   const event = req.body;
   Events.addEvent(event, function (err, event) {
     if (err) return next(err);
-    res.status(200).json({event})
+    res.status(201).json({event})
   });
 });
 
@@ -27,16 +27,15 @@ router.get('/:id', function (req, res, next) {
 });
 
 router.put('/:id', function (req, res, next) {
-  const event = req.body;
-  Events.editEvent(req.params.id, event, function (err, event) {
+  const event = req.body, {id} = req.params;
+  Events.editEvent(id, event, function (err, event) {
     if (err) return next(err);
     res.status(200).json({event})
   });
 });
 
 router.post('/:id/resources', function (req, res, next) {
-  const {id} = req.params;
-  const {body} = req;
+  const {body, params: {id}} = req;
   if (!id || !body) return next(new Error('Missing parameter or body')); // TODO: error handle this properly
   Resources.addResource(id, body, function (err, event, resource) {
     if (err) return next(err);
