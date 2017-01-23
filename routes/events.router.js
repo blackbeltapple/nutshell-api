@@ -1,5 +1,5 @@
 const express = require('express');
-const {Events} = require('../controllers');
+const {Events, Resources} = require('../controllers');
 const router = express.Router();
 
 router.get('/', function (req, res) {
@@ -32,6 +32,16 @@ router.put('/:id', function (req, res, next) {
     if (err) return next(err);
     res.status(200).json({event})
   });
+});
+
+router.post('/:id/resources', function (req, res, next) {
+  const {id} = req.params;
+  const {body} = req;
+  if (!id || !body) return next(new Error('Missing parameter or body')); // TODO: error handle this properly
+  Resources.addResource(id, body, function (err, event, resource) {
+    if (err) return next(err);
+    res.status(200).json({event, resource});
+  })
 });
 
 module.exports = router;

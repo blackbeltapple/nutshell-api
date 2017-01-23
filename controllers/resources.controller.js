@@ -1,4 +1,4 @@
-const {Resource} = require('../models');
+const {Resource, Event} = require('../models');
 const asyncMap = require('async/mapSeries');
 const {getTagsById} = require('./tags.controller');
 const validator = require('../helpers/validation/validator.js');
@@ -28,33 +28,46 @@ function getResourcesById (resource_ids, cb) {
   });
 }
 
-function addResource (resource, cb) {
-  // 'type' validation
-  if (!resource.type) return cb(validator.buildError('Validation', 'You must provide a type'));
-  var type = resource.type;
-  if (!(validator.isString(type))) return cb(validator.buildError('Validation', 'Type must be a string'));
-  if (!validator.contains(['file', 'link', 'snippet'], type)) return cb(validator.buildError('Validation', 'Resource must be a file, link or snippet'));
+function addResource (event_id, resource, sendToRouter) {
+  // Validation rules depend heavily on the 'type' of resource - file/snippet/link
+  // type validation
+  const {type} = resource;
+  if (!type) {
+    return sendToRouter(validator.buildError('Validation', 'You must provide a type'));
+  }
+  if (!(validator.isString(type))) {
+    return sendToRouter(validator.buildError('Validation', 'Type must be a string'));
+  }
+  if (!validator.contains(['file', 'link', 'snippet'], type)) {
+    return sendToRouter(validator.buildError('Validation', 'Resource must be a file, link or snippet'));
+  }
   // filename validation
-  if (type === 'file'){
-    if (!resource.filename || !validator.isString(resource.filename)) return cb(validator.buildError('Validation', 'Filename required'));
+  if (type === 'file' && (!resource.filename || !validator.isString(resource.filename))){
+    return sendToRouter(validator.buildError('Validation', 'Filename required'));
   }
   // url validation
-  if (type === 'file' || type === 'link') {
-    if (!resource.url || !validator.isString(resource.url)) return cb(validator.buildError('Validation', 'URL required'));
+  if ((type === 'file' || type === 'link') && (!resource.url || !validator.isString(resource.url))) {
+    return sendToRouter(validator.buildError('Validation', 'URL required'));
   }
   // snippet text validation
-  if (type === 'snippet'){
-    if (!resource.text || !validator.isString(resource.text)) return cb(validator.buildError('Validation', 'Snippet text required'));
+  if (type === 'snippet' && (!resource.text || !validator.isString(resource.text))) {
+    return sendToRouter(validator.buildError('Validation', 'Snippet text required'));
   }
-  // TODO - not handling addition of the resource to the event
   const newResource = new Resource(resource);
   newResource.save(function(err, resource){
-    if (err) return cb(err);
-    cb(null, resource);
-  })
+    if (err) return sendToRouter(err);
+    // Add this new resource oid to the event 'resources' array
+    Event.findByIdAndUpdate(event_id, 
+      {$addToSet: {resources: resource._id }}, 
+      {new: true}, 
+      function (err, event) {
+        if (err) return sendToRouter(err);
+        // Mongoose always creates an empty array in resources field, so no need to check that the .resources attrib exists
+        sendToRouter(null, event, resource)
+      }
+    );
+  });
 }
-
-
 
 module.exports = {
   getAllResources, getResourcesById, addResource
