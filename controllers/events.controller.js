@@ -22,16 +22,19 @@ function getEvent(id, sendToRouter) {
 }
 
 function addEvent(details, cb) {
-  let requiredDetails = [details.title, details.description, details.repo, details.event_type, details.lecturer]
-  if (!details.title || !details.start_date ||!details.end_date || !details.event_type) {
-    const err = new Error('You must enter a title, start date, end date and a event type');
+  let requiredDetails = [details.title, details.event_type]
+  if (details.description) requiredDetails.push(details.description);
+  if (details.repo) requiredDetails.push(details.repo);
+  if (details.lecturer) requiredDetails.push(details.lecturer);
+  if (!details.title || !details.start_date || !details.end_date || !details.event_type) {
+    let err = new Error('You must enter a title, start date, end date and a event type');
     err.name = 'Validation';
     return cb(err);
   }
   if (!validator.checkArrString(requiredDetails)) {
-    const err = new Error('Title, description, repo and lecturer must be a string');
+    let err = new Error('Title, description, repo and lecturer must be a string');
     err.name = 'Validation';
-    return cb(err)
+    return cb(err);
   }
   const newEvent = new Event(details);
   newEvent.save(function (err, event) {
