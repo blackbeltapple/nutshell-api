@@ -180,4 +180,40 @@ describe('Api Routes', function () {
       });
     });
   });
+  describe('DELETE /api/tags', function () {
+    xit('should delete a tag from the database', function () {
+
+    });
+    xit('should delete the tag from the resources it is linked too', function () {
+
+    });
+    it('should throw an error if the tag ID is undefined', function (done) {
+      request(ROOT)
+      .delete('/api/tags')
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"You must enter a valid tag ID"}')
+        done()
+      });
+    });
+  });
+  describe('DELETE /api/resources', function () {
+    xit('should delete a resources from the database', function () {
+
+    });
+    xit('should delete the resource from all of the events it is linked too', function () {
+
+    });
+    it('should throw an error if the resource ID is undefined', function (done) {
+      request(ROOT)
+      .delete('/api/resources')
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"You must send a valid resource ID"}')
+        done()
+      });
+    });
+  });
 });

@@ -46,6 +46,11 @@ function getTagsById (tag_ids, cb) {
 }
 
 function deleteTag (tagId, cb) {
+  if (!tagId) {
+    let err = new Error('You must enter a valid tag ID');
+    err.name = 'Validation';
+    cb(err)
+  }
   Tag.find({_id: tagId}, function (err) {
     if (err) return cb(err)
     Resource.find({tags: {$in: [tagId]}}, function (err, resources) {

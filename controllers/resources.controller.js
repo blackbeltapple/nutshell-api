@@ -55,6 +55,11 @@ function addResource (resource, cb) {
 }
 
 function deleteResource (resourceId, cb) {
+  if (!resourceId) {
+    let err = new Error('You must send a valid resource ID');
+    err.name = 'Validation';
+    return cb(err)
+  }
   Resource.findById({_id: resourceId}, function (err) {
     if (err) return cb(err);
     Event.find({resources: {$in : [resourceId]}}, function (err, events) {
