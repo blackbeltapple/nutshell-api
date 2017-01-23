@@ -98,7 +98,7 @@ function editResource (resource_id, resource, sendToRouter) {
 function editResource (resource_id, resource, sendToRouter) {
   // TODO refactor this validation to re-use addResource validation
   // type validation
-  console.log('2. At start of editResources() ');
+  // console.log('2. At start of editResources() ');
   if (!resource.type) return sendToRouter(validator.buildError('Validation', 'You must provide a type'));
   var type = resource.type;
   if (!(validator.isString(type))) return sendToRouter(validator.buildError('Validation', 'Type must be a string'));
@@ -117,11 +117,11 @@ function editResource (resource_id, resource, sendToRouter) {
   }
 
   // If all input fields are valid, look for the resource in DB
-  console.log('3. About to call findbyidandupdate');
+  // console.log('3. About to call findbyidandupdate');
   Resource.findByIdAndUpdate(resource_id, {$set: resource}, {new: true}, function (err, modifiedResource) {
-    console.log('4. In callback for findbyidandupdate');
+    // console.log('4. In callback for findbyidandupdate');
     if (err) return sendToRouter(err);
-    console.log('5. modifiedResource ', modifiedResource);
+    // console.log('5. modifiedResource ', modifiedResource);
     sendToRouter(null, modifiedResource)
   });
 }
