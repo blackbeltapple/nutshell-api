@@ -6,6 +6,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 const saveTestData = require('../seed/test.seed.js');
+const {Resource, Tag} = require('../models');
 
 const title = 'SASS';
 const start_date = new Date('October 27, 2016, 10:30:00');
@@ -181,12 +182,45 @@ describe('Api Routes', function () {
     });
   });
   describe('DELETE /api/tags', function () {
-    xit('should delete a tag from the database', function () {
-
+    it('should delete a tag from the database', function (done) {
+      var tagId;
+      Tag.find({}, function (err, tags) {
+        tagId = tags[0]._id
+        request(ROOT)
+        .delete('/api/tags')
+        .send({id: tagId})
+        .expect(200)
+        .end(function (err) {
+          if (err) return done(err)
+          Tag.findById({_id: tagId}, function (err, tag) {
+            if(err) return done(err)
+            .expect(tag).to.be(undefined)
+            done();
+          })
+        })
+      });
     });
-    xit('should delete the tag from the resources it is linked too', function () {
-
-    });
+    // it.only('should delete the tag from all of the resources it is linked too', function (done) {
+    //   var tagId;
+    //   Tag.find({}, function (err, tags) {
+    //     tagId = tags[0]._id;
+    //     console.log('tagId', tagId)
+    //     Resource.find({tags: {$in: [tagId]}}, function (err, resources) {
+    //       console.log('before delete', resources[0].tags)
+    //       expect(resources[0].tags.length).to.equal(1);
+    //       request(ROOT)
+    //       .delete('/api/tags')
+    //       .send({id: tagId})
+    //       .expect(200)
+    //       .end(function (err) {
+    //         if (err) return done(err)
+    //         console.log('after delete', resources[0].tags)
+    //         expect(resources[0].tags.length).to.equal(0);
+    //         done();
+    //       })
+    //     })
+    //   })
+    // });
     it('should throw an error if the tag ID is undefined', function (done) {
       request(ROOT)
       .delete('/api/tags')
@@ -199,8 +233,23 @@ describe('Api Routes', function () {
     });
   });
   describe('DELETE /api/resources', function () {
-    xit('should delete a resources from the database', function () {
-
+    it('should delete a resources from the database', function (done) {
+      var resourceId;
+      Resource.find({}, function (err, resources) {
+        resourceId = resources[0]._id
+        request(ROOT)
+        .delete('/api/tags')
+        .send({id: resourceId})
+        .expect(200)
+        .end(function (err) {
+          if (err) return done(err)
+          Tag.findById({_id: resourceId}, function (err, tag) {
+            if(err) return done(err)
+            .expect(tag).to.be(undefined)
+            done();
+          })
+        })
+      });
     });
     xit('should delete the resource from all of the events it is linked too', function () {
 
