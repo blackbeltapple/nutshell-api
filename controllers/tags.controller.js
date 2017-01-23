@@ -48,11 +48,25 @@ function getTagsById (tag_ids, cb) {
 function deleteTag (tagId, cb) {
   Tag.find({_id: tagId}, function (err) {
     if (err) return cb(err)
-    Resource.findOneAndUpdate({tags: {$in: [tagId]}}, {$pull: {tags: {$in:[tagId]}}}, {'new': true}, function (err) {
-      if (err) return cb(err)
-      cb(null)
+    Resource.find({tags: {$in: [tagId]}}, function (err, resources) {
+      deleteTagsFromResources(tagId, resources, function (err, resources) {
+          if (err) cb(err)
+          cb(null, resources)
+      })
     });
   }).remove().exec();
+}
+
+function deleteTagsFromResources(tagId, resources, cb) {
+  asyncMap(resources, function (resource, cbMap) {
+    Resource.findOneAndUpdate({tags: {$in: [tagId]}}, {$pull: {tags: {$in:[tagId]}}}, {'new': true}, function (err, resource) {
+      if (err) return cbMap(err)
+      cbMap(null)
+    });
+  }, function (err, resources) {
+    if (err) return cb(err)
+    cb(null, resources)
+  })
 }
 
 module.exports = {
