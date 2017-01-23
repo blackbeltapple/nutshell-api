@@ -12,10 +12,9 @@ router.put('/events/resources/:resource_id', function (req, res, next) {
   // console.log('res_id passed to editResource ' , resource_id);
   if (!resource_id || !body) next(new Error('Missing parameter or body')); // TODO: error handle this properly
   // console.log('1. Call to editResourcess');
+  // console.log('In router: ', resource_id, body);
   Resources.editResource(resource_id, body, function (err, resource) {
-    // console.log('6. Returned from editResoures()');
-    if (err) next(err);
-    // console.log('7. Call: about to send to client', resource);
+    if (err) return next(err);
     res.status(200).json({resource});
   })
 });
