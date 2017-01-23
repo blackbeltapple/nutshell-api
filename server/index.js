@@ -46,6 +46,15 @@ app.get('/loggedin', requireAuth, function (req, res) {
 app.post('/signup', Authentication.signup);
 app.post('/signin', requireSignin, Authentication.signin);
 
+// GitHub signin
+
+app.get('/githublogin',
+  passport.authenticate('github', { failureRedirect: '/login' }),
+  function (req, res) {
+    res.send('/');
+  }
+)
+
 // Error handling routes
 
 app.use('/*', function (req, res) {
