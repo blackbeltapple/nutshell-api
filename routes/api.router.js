@@ -31,7 +31,7 @@ router.post('/events', function (req, res, next) {
 });
 
 /*****************************************
- /tags - POST AND GET tags
+ /tags - POST, GET AND DELETE tags
 *****************************************/
 router.get('/tags', function (req, res, next) {
   Tags.getTags(function (err, tags) {
@@ -41,6 +41,14 @@ router.get('/tags', function (req, res, next) {
 });
 
 router.post('/tags', Tags.addTag);
+
+router.delete('/tags', function (req, res, next) {
+  const tagId = req.body.id;
+  Tags.deleteTag(tagId, function (err) {
+    if (err) next(err)
+    res.sendStatus(200)
+  })
+});
 
 router.get('/resources', function (req, res, next) {
   Resources.getAllResources(function (err, resources) {

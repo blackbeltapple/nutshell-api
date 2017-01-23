@@ -1,7 +1,7 @@
 const slugify = require('../helpers/slug');
 const asyncMap = require('async/mapSeries');
 
-const Tag = require('../models/tag');
+const {Tag, Resource} = require('../models');
 const validator = require('../helpers/validation/validator');
 
 function getTags (cb) {
@@ -45,8 +45,19 @@ function getTagsById (tag_ids, cb) {
     });
 }
 
+function deleteTag (tagId, cb) {
+  Tag.find({_id: tagId}, function (err) {
+    if (err) return cb(err)
+    Resource.findOneAndUpdate({tags: {$in: [tagId]}}, {$pull: {tags: {$in:[tagId]}}}, {'new': true}, function (err) {
+      if (err) return cb(err)
+      cb(null)
+    });
+  }).remove().exec();
+}
+
 module.exports = {
   getTags,
   addTag,
-  getTagsById
+  getTagsById,
+  deleteTag
 }
