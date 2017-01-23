@@ -126,7 +126,8 @@ function addEvents (eventResources, done) {
       resources: [eventResources.resources[3]._id, eventResources.resources[2]._id],
       repo: event.repo,
       all_day: event.all_day,
-      cohort: eventResources.cohort[0]._id
+      cohort: eventResources.cohort[0]._id,
+      lecturer: event.lecturer
     })
     eventDoc.save(function (err, data) {
       if (err) return cb(err)

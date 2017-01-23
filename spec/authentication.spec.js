@@ -27,7 +27,7 @@ const ROOT = `localhost:${PORT}`;
 describe('Authentication Routes', function () {
   before(function (done) {
     mongoose.connection.db.dropDatabase();
-    console.log('db dropped') // eslint-disable-line no-console
+    console.log('db dropped\n') // eslint-disable-line no-console
     saveTestData(function () {
       done();
     });

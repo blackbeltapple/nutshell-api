@@ -46,13 +46,15 @@ function addResource (resource, cb) {
   if (type === 'snippet'){
     if (!resource.text || !validator.isString(resource.text)) return cb(validator.buildError('Validation', 'Snippet text required'));
   }
-
+  // TODO - not handling addition of the resource to the event
   const newResource = new Resource(resource);
   newResource.save(function(err, resource){
     if (err) return cb(err);
     cb(null, resource);
   })
 }
+
+
 
 module.exports = {
   getAllResources, getResourcesById, addResource

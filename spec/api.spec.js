@@ -20,7 +20,7 @@ describe('Api Routes', function () {
   before(function (done) {
     mongoose.connection.once('connected', function () {
       mongoose.connection.db.dropDatabase(function () {
-        console.log('db dropped'); // eslint-disable-line no-console
+        console.log('db dropped\n'); // eslint-disable-line no-console
         saveTestData(function () {
           done();
         });
@@ -33,6 +33,7 @@ describe('Api Routes', function () {
     });
   });
   let event_id;
+  let newEvent;
   describe('GET /api/events', function () {
     it('return an array of event objects', function (done) {
       request(ROOT)
@@ -62,6 +63,9 @@ describe('Api Routes', function () {
         expect(Date(res.body.event.start_date)).to.equal(Date('October 27, 2016, 09:30:00'));
         expect(Date(res.body.event.end_date)).to.equal(Date('October 27, 2016 10:30:00'));
         expect(res.body.event.all_day).to.equal(false);
+        expect(res.body.event.description).to.equal('Lecture on Redux');
+        expect(res.body.event.repo).to.equal('https://github.com/northcoders/student-portal-api');
+        expect(res.body.event.lecturer).to.equal('Chris Hill');
         expect(res.body.event.resources[0].type).to.equal('snippet');
         expect(res.body.event.resources[0].text).to.equal('Lorem ipsum');
         expect(res.body.event.resources[0].url).to.equal('http://www.bbc.co.uk');
@@ -101,6 +105,7 @@ describe('Api Routes', function () {
       .expect(200)
       .end(function (err, res) {
         if (err) return done(err)
+        newEvent = res.body.event._id;
         expect(res.body.event.title).to.equal(title)
         expect(res.body.event.start_date).to.equal('2016-10-27T09:30:00.000Z')
         expect(res.body.event.end_date).to.equal('2016-10-27T11:30:00.000Z')
@@ -133,7 +138,30 @@ describe('Api Routes', function () {
         if (err) return done(err);
         expect(res.error.text).to.equal('{"err":"You must enter a title, start date, end date and a event type"}');
         done();
-        });
       });
     });
+  });
+
+  describe('PUT /events/:id route', function () {
+    let modifiedTitle = 'Modified title'
+    it('modifies the title of an existing event and returns status 200', function (done) {
+      request(ROOT)
+        .put('/api/events/' + newEvent)
+        .send({title: modifiedTitle, start_date, end_date, description, event_type, repo, all_day, lecturer})
+        .expect(200)
+        .end(function (err, res) {
+          if (err) return done(err)
+          expect(res.body.event.title).to.equal(modifiedTitle);
+          expect(res.body.event.start_date).to.equal('2016-10-27T09:30:00.000Z')
+          expect(res.body.event.end_date).to.equal('2016-10-27T11:30:00.000Z')
+          expect(res.body.event.description).to.equal(description)
+          expect(res.body.event.event_type).to.equal(event_type)
+          expect(res.body.event.repo).to.equal(repo)
+          expect(res.body.event.all_day).to.equal(all_day)
+          expect(res.body.event.lecturer).to.equal(lecturer)
+          done();
+        });
+    });
+  });
+
 });

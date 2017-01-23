@@ -4,44 +4,40 @@ const asyncMap = require('async/mapSeries');
 const Tag = require('../models/tag');
 const validator = require('../helpers/validation/validator');
 
-function getTags (cb) {
+function getTags (sendToRouter) {
   Tag.find({}, function (err, tags) {
-    if (err) return cb(err)
-    cb(null, tags)
+    if (err) return sendToRouter(err)
+    sendToRouter(null, tags)
   });
 }
 
-function addTag (req, res, next) {
-  var tagTitle = req.body.title
+function addTag (tagTitle, sendToRouter) {
   if(!validator.isString(tagTitle)) {
-    res.status(422).send('Title must be a string');
+    const err = new Error('Title must be a string');
+    err.status = 422;
+    return sendToRouter(err);
   }
   Tag.findOne({slug: slugify(tagTitle)},  function (err, existingSlug) {
     if (existingSlug) {
-      return res.status(422).send({error: 'Title is already in use'})
+      const err = new Error('Title is already in use');
+      err.status = 422;
+      return sendToRouter(err);
     }
-    if (err)  {
-      return res.send(err);
-    }
+    if (err) return sendToRouter(err);
     const newTag = new Tag({title: tagTitle, slug: slugify(tagTitle)});
-    newTag.save(function (err, tag) {
-      if (err) {
-        next(err)
-      }
-      res.json({tag})
-    });
-  })
+    newTag.save(sendToRouter);
+  });
 }
 
-function getTagsById (tag_ids, cb) {
+function getTagsById (tag_ids, sendToRouter) {
   asyncMap(tag_ids, function (tag_id, cbMap) {
       Tag.findById(tag_id, {__v: 0}, function (err, tag) {
         if (err) return cbMap(err);
         cbMap(null, tag.toObject());
       });
     }, function (err, tags) {
-      if (err) return cb(err);
-      cb(null, tags);
+      if (err) return sendToRouter(err);
+      sendToRouter(null, tags);
     });
 }
 
