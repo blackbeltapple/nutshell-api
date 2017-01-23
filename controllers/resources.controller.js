@@ -31,7 +31,7 @@ function getResourcesById (resource_ids, cb) {
 function addResource (event_id, resource, sendToRouter) {
   // Validation rules depend heavily on the 'type' of resource - file/snippet/link
   // type validation
-  const {type} = resource;
+  const {type = undefined} = resource;
   if (!type) {
     return sendToRouter(validator.buildError('Validation', 'You must provide a type'));
   }
@@ -94,8 +94,6 @@ function editResource (resource_id, resource, sendToRouter) {
     sendToRouter(null, modifiedResource)
   });
 }
-
-
 
 module.exports = {
   getAllResources, getResourcesById, addResource, editResource
