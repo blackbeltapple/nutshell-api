@@ -1,4 +1,4 @@
-const {Resource} = require('../models');
+const {Resource, Event} = require('../models');
 const asyncMap = require('async/mapSeries');
 const {getTagsById} = require('./tags.controller');
 const validator = require('../helpers/validation/validator.js');
@@ -54,6 +54,31 @@ function addResource (resource, cb) {
   })
 }
 
+function deleteResource (resourceId, cb) {
+  Resource.findById({_id: resourceId}, function (err) {
+    if (err) return cb(err);
+    Event.find({resources: {$in : [resourceId]}}, function (err, events) {
+      if (err) return cb(err)
+      deleteResourceFromEvents(resourceId, events, function (err, events) {
+        if (err) return cb(err)
+        cb(null, events)
+      })
+    })
+  }).remove().exec();
+}
+
+function deleteResourceFromEvents (resourceId, events, cb) {
+  asyncMap(events, function (event, cbMap) {
+    Event.findOneAndUpdate({resources: {$in: [resourceId]}}, {$pull: {resources: {$in:[resourceId]}}}, {new: true}, function (err, event) {
+      if (err) return cbMap(err)
+      cbMap(null, event)
+    })
+  }, function (err, events) {
+    if (err) return cb(err)
+    cb(null, events)
+  })
+}
+
 module.exports = {
-  getAllResources, getResourcesById, addResource
+  getAllResources, getResourcesById, addResource, deleteResource
 };

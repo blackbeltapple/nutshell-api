@@ -61,7 +61,7 @@ function deleteTagsFromResources(tagId, resources, cb) {
   asyncMap(resources, function (resource, cbMap) {
     Resource.findOneAndUpdate({tags: {$in: [tagId]}}, {$pull: {tags: {$in:[tagId]}}}, {'new': true}, function (err, resource) {
       if (err) return cbMap(err)
-      cbMap(null)
+      cbMap(null, resource)
     });
   }, function (err, resources) {
     if (err) return cb(err)

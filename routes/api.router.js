@@ -45,8 +45,8 @@ router.post('/tags', Tags.addTag);
 router.delete('/tags', function (req, res, next) {
   const tagId = req.body.id;
   Tags.deleteTag(tagId, function (err) {
-    if (err) next(err)
-    res.sendStatus(200)
+    if (err) next(err);
+    res.sendStatus(200);
   })
 });
 
@@ -65,6 +65,14 @@ router.post('/resources/resource', function (req, res, next) {
   Resources.addResource(resource, function (err, resource) {
     if (err) return next(err);
     res.status(200).json({resource});
+  })
+})
+
+router.delete('/resources', function (req, res, next) {
+  const resourceId = req.body.id;
+  Resources.deleteResource(resourceId, function (err) {
+    if (err) return next(err);
+    res.sendStatus(200);
   })
 })
 
