@@ -8,13 +8,14 @@ const expect = require('chai').expect;
 const saveTestData = require('../seed/test.seed.js');
 
 const title = 'SASS';
-const start_date = 'October 27, 2016, 10:30:00';
-const end_date = 'October 27, 2016, 12:30:00';
+const start_date = new Date('October 27, 2016, 10:30:00');
+const end_date = new Date('October 27, 2016, 12:30:00');
 const description = 'Lecture on SASS';
 const event_type = 'lecture';
 const repo = 'http://github.com/northcoders/sass-lecture';
 const all_day = true;
 const lecturer = 'Chris Hill';
+const testNumber = 45;
 
 describe('Api Routes', function () {
   before(function (done) {
@@ -92,7 +93,7 @@ describe('Api Routes', function () {
         done();
       });
     });
-  })
+  });
   describe('POST /api/events', function () {
     it('adds a new event to the database', function (done) {
       request(ROOT)
@@ -112,28 +113,71 @@ describe('Api Routes', function () {
         done();
       });
     });
-    it('should throw a 422 if a property that is meant to be a string is a different data type', function (done) {
-      let wrongTitle = 45;
-      request(ROOT)
-      .post('/api/events')
-      .send({title: wrongTitle, start_date, end_date, description, event_type, repo, all_day, lecturer})
-      .expect(422)
-      .end(function (err, res) {
-        if (err) return done(err);
-        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
-        done();
-      })
-    })
     it('should throw a 406 if the a required property is missing', function (done) {
       request(ROOT)
       .post('/api/events')
       .send({start_date, end_date, description, event_type, repo, all_day, lecturer})
       .expect(422)
       .end(function (err, res) {
-        if (err) return done(err);
-        expect(res.error.text).to.equal('{"err":"You must enter a title, start date, end date and a event type"}');
-        done();
-        });
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"You must enter a title, start date, end date and a event type"}')
+        done()
       });
     });
+    it('should throw an error if title isn\'t a string', function (done) {
+      request(ROOT)
+      .post('/api/events')
+      .send({title: testNumber, start_date, end_date, event_type})
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
+        done()
+      });
+    });
+    it('should throw an error if description isn\'t a string', function (done) {
+      request(ROOT)
+      .post('/api/events')
+      .send({title, start_date, end_date, event_type, description: testNumber})
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
+        done()
+      });
+    });
+    it('should throw an error if event_type isn\'t a string', function (done) {
+      request(ROOT)
+      .post('/api/events')
+      .send({title, start_date, end_date, event_type: testNumber})
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
+        done()
+      });
+    });
+    it('should throw an error if repo isn\'t a string', function (done) {
+      request(ROOT)
+      .post('/api/events')
+      .send({title, start_date, end_date, event_type, repo: testNumber})
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
+        done()
+      });
+    });
+    it('should throw and error if lecturer isn\'t a string', function (done) {
+      request(ROOT)
+      .post('/api/events')
+      .send({title, start_date, end_date, event_type, lecturer: testNumber})
+      .expect(422)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
+        done()
+      });
+    });
+  });
 });
