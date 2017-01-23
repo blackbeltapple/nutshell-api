@@ -95,6 +95,37 @@ function editResource (resource_id, resource, sendToRouter) {
   });
 }
 
+function editResource (resource_id, resource, sendToRouter) {
+  // TODO refactor this validation to re-use addResource validation
+  // type validation
+  console.log('2. At start of editResources() ');
+  if (!resource.type) return sendToRouter(validator.buildError('Validation', 'You must provide a type'));
+  var type = resource.type;
+  if (!(validator.isString(type))) return sendToRouter(validator.buildError('Validation', 'Type must be a string'));
+  if (!validator.contains(['file', 'link', 'snippet'], type)) return sendToRouter(validator.buildError('Validation', 'Resource must be a file, link or snippet'));
+  // filename validation
+  if (type === 'file'){
+    if (!resource.filename || !validator.isString(resource.filename)) return sendToRouter(validator.buildError('Validation', 'Filename required'));
+  }
+  // url validation
+  if (type === 'file' || type === 'link') {
+    if (!resource.url || !validator.isString(resource.url)) return sendToRouter(validator.buildError('Validation', 'URL required'));
+  }
+  // snippet text validation
+  if (type === 'snippet'){
+    if (!resource.text || !validator.isString(resource.text)) return sendToRouter(validator.buildError('Validation', 'Snippet text required'));
+  }
+
+  // If all input fields are valid, look for the resource in DB
+  console.log('3. About to call findbyidandupdate');
+  Resource.findByIdAndUpdate(resource_id, {$set: resource}, {new: true}, function (err, modifiedResource) {
+    console.log('4. In callback for findbyidandupdate');
+    if (err) return sendToRouter(err);
+    console.log('5. modifiedResource ', modifiedResource);
+    sendToRouter(null, modifiedResource)
+  });
+}
+
 module.exports = {
   getAllResources, getResourcesById, addResource, editResource
 };
