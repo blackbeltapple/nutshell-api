@@ -1,6 +1,20 @@
 const async = require('async');
 const models = require('../models');
 
+const user = new models.User({
+  username: 'northcoder',
+  name: 'Awesome Northcoder',
+  avatar_url: 'https://avatars3.githubusercontent.com/u/6791502?v=3&s=200',
+  password: 'manda'
+});
+
+function saveUser (waterfallCallback) {
+  user.save(function (err, user) {
+    if (err) return waterfallCallback(err);
+    waterfallCallback(null, user);
+  });
+}
+
 const tag =  {
   title: 'Redux',
   slug: 'redux',
@@ -23,31 +37,27 @@ function saveTag (user, waterfallCallback) {
 }
 
 function saveResource (user, tag, waterfallCallback) {
-  const resource = new models.Resource({
+  const resource1 = {
     type: 'snippet',
     text: 'Lorem ipsum',
     tags: [tag[0]._id, tag[1]._id],
     url: 'http://www.bbc.co.uk',
     description: 'Excellent snippet',
     filename: 'file.jpg'
-  });
-  resource.save(function (err, resource) {
-    if (err) return waterfallCallback(err);
-    waterfallCallback(null, {user, tag, resource});
-  });
-}
+  }
 
-const user = new models.User({
-  username: 'northcoder',
-  name: 'Awesome Northcoder',
-  avatar_url: 'https://avatars3.githubusercontent.com/u/6791502?v=3&s=200',
-  password: 'manda'
-});
-
-function saveUser (waterfallCallback) {
-  user.save(function (err, user) {
+  const resource2 = {
+    type: 'snippet',
+    text: 'Lorem ipsum',
+    tags: [tag[0]._id, tag[1]._id],
+    url: 'http://www.bbc.co.uk',
+    description: 'Excellent snippet',
+    filename: 'file.jpg'
+  }
+  var resourceArr = [resource1, resource2]
+  models.Resource.insertMany(resourceArr, function (err, resources) {
     if (err) return waterfallCallback(err);
-    waterfallCallback(null, user);
+    waterfallCallback(null, {user, tag, resources});
   });
 }
 
@@ -58,7 +68,7 @@ function saveEvent (obj, waterfallCallback) {
     end_date: ('October 27, 2016 10:30:00'),
     description: 'Lecture on Redux',
     event_type: 'lecture',
-    resources: [obj.resource._id],
+    resources: [obj.resources[0]._id, obj.resources[1]._id],
     repo: 'https://github.com/northcoders/student-portal-api',
     lecturer: 'Chris Hill',
     all_day: false
