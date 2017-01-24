@@ -7,7 +7,6 @@ const morgan = require('morgan');
 const bodyParser = require('body-parser');
 const passport = require('passport');
 
-const credentials = require('../credentials');
 const config = require('../config');
 const {Authentication} = require('../controllers');
 const apiRouter = require('../routes/api.router');
@@ -18,7 +17,7 @@ const PORT = process.env.PORT || config.PORT[process.env.NODE_ENV];
 const app = express();
 
 // DB setup
-const DB = process.env.DB || credentials.DB[process.env.NODE_ENV];
+const DB = process.env.DB || require('../credentials').DB[process.env.NODE_ENV];
 mongoose.connect(DB, function (err) {
   if (err) {
     console.log(`Error connecting to database ${DB}: ${err}`); // eslint-disable-line no-console

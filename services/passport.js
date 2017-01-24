@@ -4,7 +4,7 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const LocalStrategy = require('passport-local');
 
 const {User} = require('../models');
-const {secret} = require('../credentials');
+const secret = process.env.SECRET || require('../credentials').secret;
 
 const jwtOptions = {
   secretOrKey: secret,
