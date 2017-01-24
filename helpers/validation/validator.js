@@ -26,9 +26,18 @@ function contains (arr, value) {
   return false;
 }
 
+function eventsValidation (details) {
+  let requiredDetails = [details.title, details.event_type]
+  if (details.description) requiredDetails.push(details.description);
+  if (details.repo) requiredDetails.push(details.repo);
+  if (details.lecturer) requiredDetails.push(details.lecturer);
+  return requiredDetails
+}
+
 module.exports = {
   isString,
   checkArrString,
   buildError,
-  contains
+  contains,
+  eventsValidation
 };

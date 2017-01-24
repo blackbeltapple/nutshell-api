@@ -22,10 +22,7 @@ function getEvent(id, sendToRouter) {
 }
 
 function addEvent(details, cb) {
-  let requiredDetails = [details.title, details.event_type]
-  if (details.description) requiredDetails.push(details.description);
-  if (details.repo) requiredDetails.push(details.repo);
-  if (details.lecturer) requiredDetails.push(details.lecturer);
+  let requiredDetails = validator.eventsValidation(details)
   if (!details.title || !details.start_date ||!details.end_date || !details.event_type) {
     const err = new Error('You must enter a title, start date, end date and a event type');
     err.name = 'Validation';
@@ -47,8 +44,7 @@ function addEvent(details, cb) {
 }
 
 function editEvent(event_id, event, sendToRouter) {
-  // validate the input in same way as addEvent
-  let requiredDetails = [event.title, event.description, event.repo, event.event_type, event.lecturer]
+  let requiredDetails = validator.eventsValidation(event)
   if (!event.title || !event.start_date ||!event.end_date || !event.event_type) {
     const err = new Error('You must enter a title, start date, end date and a event type');
     err.name = 'Validation';
