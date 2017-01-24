@@ -18,7 +18,7 @@ const PORT = process.env.PORT || config.PORT[process.env.NODE_ENV];
 const app = express();
 
 // DB setup
-const DB = credentials.DB[process.env.NODE_ENV];
+const DB = process.env.DB || credentials.DB[process.env.NODE_ENV];
 mongoose.connect(DB, function (err) {
   if (err) {
     console.log(`Error connecting to database ${DB}: ${err}`); // eslint-disable-line no-console
