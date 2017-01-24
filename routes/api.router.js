@@ -44,9 +44,9 @@ router.post('/tags', Tags.addTag);
 
 router.delete('/tags', function (req, res, next) {
   const tagId = req.body.id;
-  Tags.deleteTag(tagId, function (err) {
+  Tags.deleteTag(tagId, function (err, resources) {
     if (err) next(err);
-    res.sendStatus(200);
+    res.status(200).json({resources});
   })
 });
 

@@ -200,27 +200,25 @@ describe('Api Routes', function () {
         })
       });
     });
-    // it.only('should delete the tag from all of the resources it is linked too', function (done) {
-    //   var tagId;
-    //   Tag.find({}, function (err, tags) {
-    //     tagId = tags[0]._id;
-    //     console.log('tagId', tagId)
-    //     Resource.find({tags: {$in: [tagId]}}, function (err, resources) {
-    //       console.log('before delete', resources[0].tags)
-    //       expect(resources[0].tags.length).to.equal(1);
-    //       request(ROOT)
-    //       .delete('/api/tags')
-    //       .send({id: tagId})
-    //       .expect(200)
-    //       .end(function (err) {
-    //         if (err) return done(err)
-    //         console.log('after delete', resources[0].tags)
-    //         expect(resources[0].tags.length).to.equal(0);
-    //         done();
-    //       })
-    //     })
-    //   })
-    // });
+    it('should delete the tag from all of the resources it is linked too', function (done) {
+      var tagId
+      Tag.find({}, function (err, tag) {
+        console.log(tag)
+        tagId = tag[0]._id;
+        Resource.find({tags: {$in: [tagId]}}, function (err, resources) {
+          expect(resources[0].tags.length).to.equal(1);
+          request(ROOT)
+          .delete('/api/tags')
+          .send({id: tagId})
+          .expect(200)
+          .end(function (err, res) {
+            if (err) return done(err)
+            expect(res.body.resources[0].tags.length).to.equal(0);
+            done()
+          });
+        });
+      });
+    });
     it('should throw an error if the tag ID is undefined', function (done) {
       request(ROOT)
       .delete('/api/tags')

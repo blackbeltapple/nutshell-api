@@ -1,16 +1,24 @@
 const async = require('async');
 const models = require('../models');
 
-const tag = new models.Tag({
+const tag =  {
   title: 'Redux',
   slug: 'redux',
   category: 'Topic'
-})
+}
+
+const tag2 = {
+  title: 'Lowbar',
+  slug: 'lowbar',
+  category: 'Topic'
+}
+
+var tagArr = [tag, tag2]
 
 function saveTag (user, waterfallCallback) {
-  tag.save(function (err, tag) {
+  models.Tag.insertMany(tagArr, function (err, tags) {
     if (err) return waterfallCallback(err)
-    waterfallCallback(null, user, tag)
+    waterfallCallback(null, user, tags)
   });
 }
 
@@ -18,7 +26,7 @@ function saveResource (user, tag, waterfallCallback) {
   const resource = new models.Resource({
     type: 'snippet',
     text: 'Lorem ipsum',
-    tags: [tag._id],
+    tags: [tag[0]._id, tag[1]._id],
     url: 'http://www.bbc.co.uk',
     description: 'Excellent snippet',
     filename: 'file.jpg'
