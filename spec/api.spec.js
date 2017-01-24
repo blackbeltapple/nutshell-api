@@ -6,7 +6,7 @@ const request = require('supertest');
 const mongoose = require('mongoose');
 const expect = require('chai').expect;
 const saveTestData = require('../seed/test.seed.js');
-const {Resource, Tag} = require('../models');
+const {Resource, Tag, Event} = require('../models');
 
 const title = 'SASS';
 const start_date = new Date('October 27, 2016, 10:30:00');
@@ -203,7 +203,6 @@ describe('Api Routes', function () {
     it('should delete the tag from all of the resources it is linked too', function (done) {
       var tagId
       Tag.find({}, function (err, tag) {
-        console.log(tag)
         tagId = tag[0]._id;
         Resource.find({tags: {$in: [tagId]}}, function (err, resources) {
           expect(resources[0].tags.length).to.equal(1);
@@ -236,7 +235,7 @@ describe('Api Routes', function () {
       Resource.find({}, function (err, resources) {
         resourceId = resources[0]._id
         request(ROOT)
-        .delete('/api/tags')
+        .delete('/api/resources')
         .send({id: resourceId})
         .expect(200)
         .end(function (err) {
@@ -249,8 +248,23 @@ describe('Api Routes', function () {
         })
       });
     });
-    xit('should delete the resource from all of the events it is linked too', function () {
-
+    it('should delete the resource from all of the events it is linked too', function (done) {
+      var resourceId
+      Resource.find({}, function (err, resources) {
+        resourceId = resources[0]._id;
+        Event.find({resources: {$in: [resourceId]}}, function (err, events) {
+          expect(events[0].resources.length).to.equal(1);
+          request(ROOT)
+          .delete('/api/resources')
+          .send({id: resourceId})
+          .expect(200)
+          .end(function (err, res) {
+            if (err) return done(err)
+            expect(res.body.event[0].resources.length).to.equal(0);
+            done()
+          });
+        });
+      });
     });
     it('should throw an error if the resource ID is undefined', function (done) {
       request(ROOT)

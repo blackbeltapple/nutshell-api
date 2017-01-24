@@ -70,9 +70,9 @@ router.post('/resources/resource', function (req, res, next) {
 
 router.delete('/resources', function (req, res, next) {
   const resourceId = req.body.id;
-  Resources.deleteResource(resourceId, function (err) {
+  Resources.deleteResource(resourceId, function (err, event) {
     if (err) return next(err);
-    res.sendStatus(200);
+    res.status(200).json({event});
   })
 })
 
