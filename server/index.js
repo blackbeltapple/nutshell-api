@@ -65,6 +65,9 @@ app.use(function (err, req, res, next) {
   if (err.name === 'Validation') {
     return res.status(422).json({err: err.message});
   }
+  if (err.name === 'Not Found') {
+    return res.status(404).json({err: err.message})
+  }
   next(err);
 })
 

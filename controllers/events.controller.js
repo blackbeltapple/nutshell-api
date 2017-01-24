@@ -12,7 +12,7 @@ function getAllEvents (sendToRouter) {
 function getEvent(id, sendToRouter) {
   Event.findById(id, {__v: 0}, function (err, event) {
     if (err) return sendToRouter(err);
-    if (!event) return sendToRouter(new Error('Event not found')); // TODO: error handle this properly
+    if (!event) return sendToRouter(validator.buildError('Not Found', 'Event not found'))
     event = event.toObject();
     getResourcesById(event.resources, function (err, resources) {
       if (err) return sendToRouter(err);
@@ -21,22 +21,18 @@ function getEvent(id, sendToRouter) {
   });
 }
 
-function addEvent(details, cb) {
+function addEvent(details, sendToRouter) {
   var requiredDetails = validator.eventsValidation(details)
   if (!details.title || !details.start_date || !details.end_date || !details.event_type) {
-    let err = new Error('You must enter a title, start date, end date and a event type');
-    err.name = 'Validation';
-    return cb(err);
+    return sendToRouter(validator.buildError('Validation', 'You must enter a title, start date, end date and a event type'))
   }
   if (!validator.checkArrString(requiredDetails)) {
-    let err = new Error('Title, description, repo and lecturer must be a string');
-    err.name = 'Validation';
-    return cb(err);
+    return sendToRouter(validator.buildError('Validation', 'Title, description, repo and lecturer must be a string'))
   }
   const newEvent = new Event(details);
   newEvent.save(function (err, event) {
-    if (err) return cb(err)
-    cb(null, event)
+    if (err) return sendToRouter(err)
+    sendToRouter(null, event)
   });
 }
 
