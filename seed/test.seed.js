@@ -1,34 +1,6 @@
 const async = require('async');
 const models = require('../models');
 
-const tag = new models.Tag({
-  title: 'Redux',
-  slug: 'redux',
-  category: 'Topic'
-})
-
-function saveTag (user, waterfallCallback) {
-  tag.save(function (err, tag) {
-    if (err) return waterfallCallback(err)
-    waterfallCallback(null, user, tag)
-  });
-}
-
-function saveResource (user, tag, waterfallCallback) {
-  const resource = new models.Resource({
-    type: 'snippet',
-    text: 'Lorem ipsum',
-    tags: [tag._id],
-    url: 'http://www.bbc.co.uk',
-    description: 'Excellent snippet',
-    filename: 'file.jpg'
-  });
-  resource.save(function (err, resource) {
-    if (err) return waterfallCallback(err);
-    waterfallCallback(null, {user, tag, resource});
-  });
-}
-
 const user = new models.User({
   username: 'northcoder',
   name: 'Awesome Northcoder',
@@ -43,6 +15,52 @@ function saveUser (waterfallCallback) {
   });
 }
 
+const tag =  {
+  title: 'Redux',
+  slug: 'redux',
+  category: 'Topic'
+}
+
+const tag2 = {
+  title: 'Lowbar',
+  slug: 'lowbar',
+  category: 'Topic'
+}
+
+var tagArr = [tag, tag2]
+
+function saveTag (user, waterfallCallback) {
+  models.Tag.insertMany(tagArr, function (err, tags) {
+    if (err) return waterfallCallback(err)
+    waterfallCallback(null, user, tags)
+  });
+}
+
+function saveResource (user, tag, waterfallCallback) {
+  const resource1 = {
+    type: 'snippet',
+    text: 'Lorem ipsum',
+    tags: [tag[0]._id, tag[1]._id],
+    url: 'http://www.bbc.co.uk',
+    description: 'Excellent snippet',
+    filename: 'file.jpg'
+  }
+
+  const resource2 = {
+    type: 'snippet',
+    text: 'Lorem ipsum',
+    tags: [tag[0]._id, tag[1]._id],
+    url: 'http://www.bbc.co.uk',
+    description: 'Excellent snippet',
+    filename: 'file.jpg'
+  }
+  var resourceArr = [resource1, resource2]
+  models.Resource.insertMany(resourceArr, function (err, resources) {
+    if (err) return waterfallCallback(err);
+    waterfallCallback(null, {user, tag, resources});
+  });
+}
+
 function saveEvent (obj, waterfallCallback) {
   const event = new models.Event({
     title: 'Redux',
@@ -50,7 +68,7 @@ function saveEvent (obj, waterfallCallback) {
     end_date: ('October 27, 2016 10:30:00'),
     description: 'Lecture on Redux',
     event_type: 'lecture',
-    resources: [obj.resource._id],
+    resources: [obj.resources[0]._id, obj.resources[1]._id],
     repo: 'https://github.com/northcoders/student-portal-api',
     lecturer: 'Chris Hill',
     all_day: false

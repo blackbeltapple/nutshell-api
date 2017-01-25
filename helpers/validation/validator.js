@@ -11,9 +11,9 @@ function checkArrString (arr) {
   return true
 }
 
-function buildError (title, text) {
+function buildError (status, text) {
   var newErr = new Error(text);
-  newErr.name = title;
+  newErr.status = status;
   return newErr;
 }
 

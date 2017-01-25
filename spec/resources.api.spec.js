@@ -3,7 +3,8 @@ const mongoose = require('mongoose');
 const expect = require('chai').expect;
 const saveTestData = require('../seed/test.seed.js');
 const config = require('../config.js');
-const {contains} = require('../helpers/validation/validator.js')
+const {contains} = require('../helpers/validation/validator.js');
+const {Resource, Event} = require('../models');
 
 process.env.NODE_ENV = 'test';
 require('../server');
@@ -78,37 +79,61 @@ describe('POST & PUT resources', function () {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({filename, url, description, text})
-      .expect(422, {err: 'You must provide a type'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('You must provide a type');
+        done();
+      });
     });
     it('returns correct error msg when client sends invalid  \'type\'', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type: 'banana', filename, url, description, text})
-      .expect(422, {err: 'Resource must be a file, link or snippet'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Resource must be a file, link or snippet');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no filename sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type, url, description, text})
-      .expect(422, {err: 'Filename required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Filename required');
+        done();
+      });
     });
     it('returns correct error msg when type = link, but no URL sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type: 'link', filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no URL sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type, filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = snippet, but no text sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type: 'snippet', filename, url, description})
-      .expect(422, {err: 'Snippet text required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Snippet text required');
+        done();
+      });
     });
   });
 
@@ -134,37 +159,98 @@ describe('POST & PUT resources', function () {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({filename, url, description, text})
-      .expect(422, {err: 'You must provide a type'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('You must provide a type');
+        done();
+      });
     });
     it('returns correct error msg when client sends invalid  \'type\'', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type: 'banana', filename, url, description, text})
-      .expect(422, {err: 'Resource must be a file, link or snippet'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Resource must be a file, link or snippet');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no filename sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type, url, description, text})
-      .expect(422, {err: 'Filename required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Filename required');
+        done();
+      });
     });
     it('returns correct error msg when type = link, but no URL sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type: 'link', filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no URL sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type, filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = snippet, but no text sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type: 'snippet', filename, url, description})
-      .expect(422, {err: 'Snippet text required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Snippet text required');
+        done();
+      });
     });
+  });
+
+  describe('DELETE /resources/:resource_id', function () {
+    it('should delete a resources from the database', function (done) {
+    Resource.findOne({}, function (err, {_id}) {
+      if (err) return done(err)
+      request(ROOT)
+      .delete(`/api/resources/${_id}`)
+      .expect(200)
+      .end(function (err) {
+        if (err) return done(err)
+        Resource.findById(_id, function (err, resource) {
+          if(err) return done(err)
+          .expect(resource).to.be.null;
+          done();
+        })
+      })
+    });
+  });
+  it('should delete the resource from all of the events it is linked too', function (done) {
+    Resource.findOne({}, function (err, {_id}) {
+      Event.find({resources: {$in: [_id]}}, function (err, events) {
+        expect(events[0].resources.length).to.equal(1);
+        done()
+      });
+    });
+  });
+  it('should throw an error if the resource ID is undefined', function (done) {
+    request(ROOT)
+    .delete(`/api/resources/whatever`)
+    .expect(422)
+    .end(function (err, res) {
+      if (err) return done(err)
+      expect(res.error.text).to.equal('You must enter a valid resource ID')
+      done()
+    });
+  });
   });
 });

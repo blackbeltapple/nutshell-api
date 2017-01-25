@@ -125,18 +125,18 @@ describe('Api Routes', function () {
       .expect(422)
       .end(function (err, res) {
         if (err) return done(err);
-        expect(res.error.text).to.equal('{"err":"Title, description, repo and lecturer must be a string"}')
+        expect(res.error.text).to.equal('Title, description, repo and lecturer must be a string');
         done();
       })
     })
-    it('should throw a 406 if the a required property is missing', function (done) {
+    it('should throw a 422 if the a required property is missing', function (done) {
       request(ROOT)
       .post('/api/events')
       .send({start_date, end_date, description, event_type, repo, all_day, lecturer})
       .expect(422)
       .end(function (err, res) {
         if (err) return done(err);
-        expect(res.error.text).to.equal('{"err":"You must enter a title, start date, end date and a event type"}');
+        expect(res.error.text).to.equal('You must enter a title, start date, end date and a event type');
         done();
       });
     });
