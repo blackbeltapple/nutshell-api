@@ -55,14 +55,12 @@ function editEvent(event_id, event, sendToRouter) {
     err.name = 'Validation';
     return sendToRouter(err)
   }
-
   Event.findByIdAndUpdate(event_id, {$set: event}, {new: true}, function (err, event) {
     if (err) return sendToRouter(err);
     if (!event) return sendToRouter(new Error('Event not found')); // TODO: error handle this properly
     event = event.toObject();
     sendToRouter(null, event)
   });
-
 }
 
 module.exports = {
