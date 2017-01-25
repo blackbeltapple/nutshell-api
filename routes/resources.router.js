@@ -10,4 +10,11 @@ router.get('/', function (req, res, next) {
   });
 });
 
+router.delete('/:resource_id', function (req, res, next) {
+  Resources.deleteResource(req.params.resource_id, function (err, events) {
+    if (err) return next(err);
+    res.json({events})
+  });
+});
+
 module.exports = router;

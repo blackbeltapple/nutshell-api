@@ -117,5 +117,5 @@ describe('API:tags', function () {
        done()
      });
    });
-  })
-})
+ });
+});

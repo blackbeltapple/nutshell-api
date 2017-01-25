@@ -95,6 +95,42 @@ function editResource (resource_id, resource, sendToRouter) {
   });
 }
 
+function deleteResource (resourceId, sendToRouter) {
+  Resource.findById(resourceId, function (err, resource) {
+    if (err) {
+      if (err.name === 'CastError') return sendToRouter(validator.buildError(422, 'You must enter a valid resource ID'));
+      return sendToRouter(err);
+    }
+    if (!resource) {
+      return sendToRouter(validator.buildError(422, 'You must enter a valid resource ID'));
+    }
+    resource.remove();
+    Event.find({resources: {$in : [resourceId]}}, function (err, events) {
+      if (err) return sendToRouter(err)
+      deleteResourceFromEvents(resourceId, events, function (err, events) {
+        if (err) return sendToRouter(err)
+        sendToRouter(null, events)
+      })
+    })
+  })
+}
+
+function deleteResourceFromEvents (resourceId, events, cb) {
+ asyncMap(events, function (event, cbMap) {
+   Event.findOneAndUpdate({resources: {$in: [resourceId]}}, {$pull: {resources: {$in:[resourceId]}}}, {new: true}, function (err, event) {
+     if (err) return cbMap(err)
+     cbMap(null, event)
+   })
+ }, function (err, events) {
+   if (err) return cb(err)
+   cb(null, events)
+ })
+}
+
 module.exports = {
-  getAllResources, getResourcesById, addResource, editResource
+  getAllResources,
+  getResourcesById,
+  addResource,
+  editResource,
+  deleteResource
 };
