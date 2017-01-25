@@ -2,6 +2,7 @@ const {Resource, Event} = require('../models');
 const asyncMap = require('async/mapSeries');
 const {getTagsById} = require('./tags.controller');
 const validator = require('../helpers/validation/validator.js');
+const getTitle = require('../helpers/getTitle');
 
 function getAllResources (sendToRouter) {
   Resource.find({}, {_id: 1}, function (err, resource_ids) {
@@ -29,30 +30,32 @@ function getResourcesById (resource_ids, cb) {
 }
 
 function addResource (event_id, resource, sendToRouter) {
-  // Validation rules depend heavily on the 'type' of resource - file/snippet/link
-  // type validation
-  const {type = undefined} = resource;
-  if (!type) {
-    return sendToRouter(validator.buildError(422, 'You must provide a type'));
+  if (validator.resourcesValidation(resource, sendToRouter)) {
+    if (resource.type === 'link') {
+      saveLink(resource, sendToRouter)
+    } else {
+      saveResource(event_id, resource, sendToRouter)
+    }
   }
-  if (!(validator.isString(type))) {
-    return sendToRouter(validator.buildError(422, 'Type must be a string'));
-  }
-  if (!validator.contains(['file', 'link', 'snippet'], type)) {
-    return sendToRouter(validator.buildError(422, 'Resource must be a file, link or snippet'));
-  }
-  // filename validation
-  if (type === 'file' && (!resource.filename || !validator.isString(resource.filename))){
-    return sendToRouter(validator.buildError(422, 'Filename required'));
-  }
-  // url validation
-  if ((type === 'file' || type === 'link') && (!resource.url || !validator.isString(resource.url))) {
-    return sendToRouter(validator.buildError(422, 'URL required'));
-  }
-  // snippet text validation
-  if (type === 'snippet' && (!resource.text || !validator.isString(resource.text))) {
-    return sendToRouter(validator.buildError(422, 'Snippet text required'));
-  }
+}
+
+function saveLink (resource, sendToRouter) {
+  return getTitle(resource.url)
+    .then((title) => {
+      const newResource = new Resource({
+        title, url: resource.url, type: resource.type
+      });
+      return newResource.save()
+    })
+    .then((savedResource) => {
+      // console.log('error handler', savedResource)
+      sendToRouter(null, savedResource);
+    })
+    .catch((err) => {
+      sendToRouter(err);
+    });
+}
+function saveResource (event_id, resource, sendToRouter) {
   const newResource = new Resource(resource);
   newResource.save(function(err, resource){
     if (err) return sendToRouter(err);

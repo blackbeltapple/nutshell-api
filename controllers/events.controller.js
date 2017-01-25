@@ -22,22 +22,17 @@ function getEvent(id, sendToRouter) {
 }
 
 function addEvent(details, sendToRouter) {
-  let requiredDetails = validator.eventsValidation(details)
-  if (!details.title || !details.start_date ||!details.end_date || !details.event_type) {
-    return sendToRouter(validator.buildError(422, 'You must enter a title, start date, end date and a event type'));
+  if (validator.eventsValidation(details, sendToRouter)) {
+    const newEvent = new Event(details);
+    newEvent.save(function (err, event) {
+      if (err) return sendToRouter(err);
+      if (event.event_type === 'sprint' || event.event_type === 'weekend review') {
+        event.all_day = true;
+      }
+      if (err) return sendToRouter(err)
+      sendToRouter(null, event)
+    });
   }
-  if (!validator.checkArrString(requiredDetails)) {
-    return sendToRouter(validator.buildError(422, 'Title, description, repo and lecturer must be a string'));
-  }
-  const newEvent = new Event(details);
-  newEvent.save(function (err, event) {
-    if (err) return sendToRouter(err);
-    if (event.event_type === 'sprint' || event.event_type === 'weekend review') {
-      event.all_day = true;
-    }
-    if (err) return sendToRouter(err)
-    sendToRouter(null, event)
-  });
 }
 
 function editEvent(event_id, event, sendToRouter) {
