@@ -28,22 +28,11 @@ describe('GET & POST tags', function () {
 
   describe('POST /tags', function () {
 
-    it('returns an error if no tags found in database', function (done) {
-      request(ROOT)
-      .get('/api/tags')
-      .expect(422)
-      .end(function (err, res) {
-        if (err) return done(err)
-        expect(res.body.err).to.equal('No tags found');
-        done();
-      });
-    });
-
     it('successfully adds a new tag', function (done) {
       request(ROOT)
       .post('/api/tags')
       .send({title, slug, category})
-      .expect(200)
+      .expect(201)
       .end(function (err, res) {
         if (err) return done(err)
         expect(res.body.tag.title).to.equal(title);
@@ -60,7 +49,7 @@ describe('GET & POST tags', function () {
       .expect(422)
       .end(function (err, res) {
         if (err) return done(err)
-        expect(res.body.err).to.equal('Tag must have title');
+        expect(res.error.text).to.equal('Tag must have title');
         done();
       });
     });
@@ -81,6 +70,16 @@ describe('GET & POST tags', function () {
           expect(tag).to.have.all.keys('title', 'slug', 'category', '__v', '_id');
           expect(['Type', 'Topic']).to.include(tag.category)
         })
+        done();
+      });
+    });
+    xit('returns an error if no tags found in database', function (done) {
+      request(ROOT)
+      .get('/api/tags')
+      .expect(404)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.body.err).to.equal('No tags found');
         done();
       });
     });

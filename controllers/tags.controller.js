@@ -6,12 +6,23 @@ const validator = require('../helpers/validation/validator');
 
 function getTags (sendToRouter) {
   Tag.find({}, function (err, tags) {
-    if (err) return sendToRouter(err)
-    sendToRouter(null, tags)
+    if (err) return sendToRouter(err);
+    if (!tags) {
+      const err = new Error('No tags found');
+      err.status = 404;
+      return sendToRouter(err);
+    }
+    sendToRouter(null, tags);
   });
 }
 
 function addTag (tagTitle, sendToRouter) {
+  if(!tagTitle) {
+    console.log('**********************HELLO************************')
+    const err = new Error('Tag must have title');
+    err.status = 422;
+    return sendToRouter(err);
+  }
   if(!validator.isString(tagTitle)) {
     const err = new Error('Title must be a string');
     err.status = 422;
