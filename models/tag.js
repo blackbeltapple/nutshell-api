@@ -9,7 +9,6 @@ const tagSchema = new Schema({
   slug: {
     type: String,
     lowercase: true,
-    required: true,
     unique: true
   },
   category: {

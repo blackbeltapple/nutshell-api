@@ -16,9 +16,12 @@ router.post('/', function (req, res, next) {
   });
 });
 
-router.use(function (error, req, res, next) { // eslint-disable-line no-unused-vars
-  res.status(error.status || 500);
-  res.send(error.message);
+router.delete('/:tag_id', function (req, res, next) {
+  Tags.deleteTag(req.params.tag_id, function (err, resources) {
+    console.log({err})
+    if (err) return next(err);
+    res.send({resources});
+  });
 });
 
 module.exports = router;

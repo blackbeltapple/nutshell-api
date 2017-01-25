@@ -78,37 +78,61 @@ describe('POST & PUT resources', function () {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({filename, url, description, text})
-      .expect(422, {err: 'You must provide a type'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('You must provide a type');
+        done();
+      });
     });
     it('returns correct error msg when client sends invalid  \'type\'', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type: 'banana', filename, url, description, text})
-      .expect(422, {err: 'Resource must be a file, link or snippet'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Resource must be a file, link or snippet');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no filename sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type, url, description, text})
-      .expect(422, {err: 'Filename required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Filename required');
+        done();
+      });
     });
     it('returns correct error msg when type = link, but no URL sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type: 'link', filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no URL sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type, filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = snippet, but no text sent', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type: 'snippet', filename, url, description})
-      .expect(422, {err: 'Snippet text required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Snippet text required');
+        done();
+      });
     });
   });
 
@@ -134,37 +158,61 @@ describe('POST & PUT resources', function () {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({filename, url, description, text})
-      .expect(422, {err: 'You must provide a type'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('You must provide a type');
+        done();
+      });
     });
     it('returns correct error msg when client sends invalid  \'type\'', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type: 'banana', filename, url, description, text})
-      .expect(422, {err: 'Resource must be a file, link or snippet'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Resource must be a file, link or snippet');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no filename sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type, url, description, text})
-      .expect(422, {err: 'Filename required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Filename required');
+        done();
+      });
     });
     it('returns correct error msg when type = link, but no URL sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type: 'link', filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = file, but no URL sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type, filename, description, text})
-      .expect(422, {err: 'URL required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('URL required');
+        done();
+      });
     });
     it('returns correct error msg when type = snippet, but no text sent', function (done) {
       request(ROOT)
       .put(`/api/events/resources/${resource_id}`)
       .send({type: 'snippet', filename, url, description})
-      .expect(422, {err: 'Snippet text required'}, done);
+      .expect(422)
+      .end(function (err, res) {
+        expect(res.error.text).to.equal('Snippet text required');
+        done();
+      });
     });
   });
 });
