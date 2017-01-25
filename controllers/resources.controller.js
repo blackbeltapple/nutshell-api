@@ -48,7 +48,6 @@ function saveLink (resource, sendToRouter) {
       return newResource.save()
     })
     .then((savedResource) => {
-      // console.log('error handler', savedResource)
       sendToRouter(null, savedResource);
     })
     .catch((err) => {
@@ -59,13 +58,11 @@ function saveResource (event_id, resource, sendToRouter) {
   const newResource = new Resource(resource);
   newResource.save(function(err, resource){
     if (err) return sendToRouter(err);
-    // Add this new resource oid to the event 'resources' array
     Event.findByIdAndUpdate(event_id,
       {$addToSet: {resources: resource._id }},
       {new: true},
       function (err, event) {
         if (err) return sendToRouter(err);
-        // Mongoose always creates an empty array in resources field, so no need to check that the .resources attrib exists
         sendToRouter(null, event, resource)
       }
     );

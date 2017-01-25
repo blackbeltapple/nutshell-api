@@ -70,6 +70,10 @@ function resourcesValidation (resource, sendToRouter) {
   if (type === 'snippet' && (!resource.text || !isString(resource.text))) {
     return sendToRouter(buildError(422, 'Snippet text required'));
   }
+  // check for valid URL
+  if (!checkURL(resource.url)) {
+    return sendToRouter(buildError(422, 'You must provide a valid URL'));
+  }
   return true;
 }
 
