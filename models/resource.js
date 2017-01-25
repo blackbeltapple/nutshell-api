@@ -22,6 +22,10 @@ let resourceSchema = new Schema({
     type: String,
     required: false
   },
+  title: {
+    type: String,
+    required: false
+  },
   description: {
     type: String,
     required: false

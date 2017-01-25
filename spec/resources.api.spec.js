@@ -75,6 +75,42 @@ describe('POST & PUT resources', function () {
         done();
       });
     });
+    it('should return the article title, if the link type is provided', function (done) {
+      request(ROOT)
+      .post(`/api/events/${event_id}/resources`)
+      .send({type: 'link', url: 'http://www.bbc.co.uk/news/uk-politics-38721650'})
+      .expect(201)
+      .end(function (err, res) {
+        if (err) return done(err);
+        // Although it is misleading, the resource is saved on the 'event' property
+        expect(res.body.event.type).to.equal('link');
+        expect(res.body.event.title).to.equal('Supreme Court Brexit ruling: What happens next? - BBC News');
+        expect(res.body.event.url).to.equal('http://www.bbc.co.uk/news/uk-politics-38721650');
+        done()
+      });
+    });
+    it('should return an empty string, if the website doesn\'t have a title', function (done) {
+      request(ROOT)
+      .post(`/api/events/${event_id}/resources`)
+      .send({type: 'link', url: 'http://www.thehistoryofenglish.com/'})
+      .expect(201)
+      .end(function (err, res) {
+        if (err) return done(err)
+        expect(res.body.event.type).to.equal('link');
+        expect(res.body.event.title).to.equal('');
+        done();
+      });
+    });
+    it('should throw a 422 error if url is invalid', function (done) {
+      request(ROOT)
+        .post(`/api/events/${event_id}/resources`)
+        .send({type, filename, url: 'http', description, text})
+        .expect(422)
+        .end(function (err, res) {
+          expect(res.error.text).to.equal('You must provide a valid URL')
+        done();
+      });
+    });
     it('returns correct error msg when client omits \'type\'', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
