@@ -57,7 +57,7 @@ describe('POST & PUT resources', function () {
       });
     });
 
-    it('successfully saves and returns a new resource, and modified event.resource array', function (done) {
+    it('successfully saves a file, and modifies event.resource array', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
       .send({type, filename, url, description, text})
@@ -75,6 +75,34 @@ describe('POST & PUT resources', function () {
         done();
       });
     });
+    it('successfully saves a link, and modifies event.resource array', function (done) {
+      request(ROOT)
+      .post(`/api/events/${event_id}/resources`)
+      .send({type: 'link', url:'http://www.manutd.com/'})
+      .expect(201)
+      .end(function (err, res) {
+        if (err) return done(err);
+        expect(res.body.resource.type).to.equal('link');
+        expect(res.body.resource.url).to.equal('http://www.manutd.com/');
+        expect(res.body.event.resources.length).to.equal(2);
+        done();
+      });
+    });
+    it('successfully saves a snippet, and modifies event.resource array', function (done) {
+      request(ROOT)
+      .post(`/api/events/${event_id}/resources`)
+      .send({type: 'snippet', text: 'This is text for snippet'})
+      .expect(201)
+      .end(function (err, res) {
+        if (err) return done(err);
+        expect(res.body.resource.type).to.equal('snippet');
+        expect(res.body.resource.text).to.equal('This is text for snippet');
+        expect(res.body.event.resources.length).to.equal(3);
+        done();
+      });
+    });
+
+
     it('should return the article title, if the link type is provided', function (done) {
       request(ROOT)
       .post(`/api/events/${event_id}/resources`)
@@ -82,10 +110,9 @@ describe('POST & PUT resources', function () {
       .expect(201)
       .end(function (err, res) {
         if (err) return done(err);
-        // Although it is misleading, the resource is saved on the 'event' property
-        expect(res.body.event.type).to.equal('link');
-        expect(res.body.event.title).to.equal('Supreme Court Brexit ruling: What happens next? - BBC News');
-        expect(res.body.event.url).to.equal('http://www.bbc.co.uk/news/uk-politics-38721650');
+        expect(res.body.resource.type).to.equal('link');
+        expect(res.body.resource.title).to.equal('Supreme Court Brexit ruling: What happens next? - BBC News');
+        expect(res.body.resource.url).to.equal('http://www.bbc.co.uk/news/uk-politics-38721650');
         done()
       });
     });
@@ -96,8 +123,8 @@ describe('POST & PUT resources', function () {
       .expect(201)
       .end(function (err, res) {
         if (err) return done(err)
-        expect(res.body.event.type).to.equal('link');
-        expect(res.body.event.title).to.equal('');
+        expect(res.body.resource.type).to.equal('link');
+        expect(res.body.resource.title).to.equal('');
         done();
       });
     });

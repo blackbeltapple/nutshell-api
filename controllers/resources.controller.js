@@ -32,14 +32,14 @@ function getResourcesById (resource_ids, cb) {
 function addResource (event_id, resource, sendToRouter) {
   if (validator.resourcesValidation(resource, sendToRouter)) {
     if (resource.type === 'link') {
-      saveLink(resource, sendToRouter)
+      saveLink(event_id, resource, sendToRouter)
     } else {
       saveResource(event_id, resource, sendToRouter)
     }
   }
 }
 
-function saveLink (resource, sendToRouter) {
+function saveLink (event_id, resource, sendToRouter) {
   return getTitle(resource.url)
     .then((title) => {
       const newResource = new Resource({
@@ -48,7 +48,13 @@ function saveLink (resource, sendToRouter) {
       return newResource.save()
     })
     .then((savedResource) => {
-      sendToRouter(null, savedResource);
+      Event.findByIdAndUpdate(event_id,
+        {$addToSet: {resources: savedResource._id}},
+        {new: true},
+        function (err, event) {
+          if (err) return sendToRouter(err);
+          sendToRouter(null, event, savedResource)
+        });
     })
     .catch((err) => {
       sendToRouter(err);

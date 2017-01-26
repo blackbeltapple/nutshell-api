@@ -45,11 +45,11 @@ const student = new models.User({
 });
 
 const staff = new models.User({
-  username: 'Mauro username',
-  name: 'Mauro name',
-  avatar_url: 'https://avatars3.githubusercontent.com/u/6791502?v=3&s=200',
-  password: 'mauropassword',
-  role: 'staff'
+ username: 'maurogestoso',
+ name: 'Mauro Gestoso',
+ avatar_url: 'https://avatars3.githubusercontent.com/u/4980658?v=3&s=460',
+ password: 'mauropassword',
+ role: 'staff'
 })
 
 function saveStudent (cb) {

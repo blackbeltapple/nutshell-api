@@ -66,13 +66,12 @@ function resourcesValidation (resource, sendToRouter) {
   if ((type === 'file' || type === 'link') && (!resource.url || !isString(resource.url))) {
     return sendToRouter(buildError(422, 'URL required'));
   }
+  if ((type === 'file' || type === 'link') && !checkURL(resource.url)) {
+    return sendToRouter(buildError(422, 'You must provide a valid URL'));
+  }
   // snippet text validation
   if (type === 'snippet' && (!resource.text || !isString(resource.text))) {
     return sendToRouter(buildError(422, 'Snippet text required'));
-  }
-  // check for valid URL
-  if (!checkURL(resource.url)) {
-    return sendToRouter(buildError(422, 'You must provide a valid URL'));
   }
   return true;
 }

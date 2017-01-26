@@ -35,10 +35,11 @@ const signup = function signup (req, res, next) {
 };
 
 const signin = function signin (req, res) {
-  const {username, name, avatar_url} = req.user;
+  // For testing
+  const {username, name, avatar_url, role} = req.user;
   res.send({
     token: tokenForUser(req.user),
-    user: {username, name, avatar_url}
+    user: {username, name, avatar_url, role}
   });
 };
 

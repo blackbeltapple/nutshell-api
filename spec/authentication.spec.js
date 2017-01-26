@@ -137,10 +137,11 @@ describe('Authentication Routes', function () {
           if (err) return done(err);
           expect(res.body).to.have.all.keys('token', 'user');
           expect(res.body.token).to.be.a('string').of.length(153);
-          expect(res.body.user).to.have.all.keys('username', 'name', 'avatar_url');
+          expect(res.body.user).to.have.all.keys('username', 'name', 'avatar_url', 'role');
           expect(res.body.user.username).to.equal(username);
           expect(res.body.user.name).to.equal(name);
           expect(res.body.user.avatar_url).to.equal(avatarUrl);
+          expect(res.body.user.role).to.equal('student');
           done();
         });
     });
