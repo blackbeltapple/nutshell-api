@@ -76,11 +76,18 @@ function resourcesValidation (resource, sendToRouter) {
   return true;
 }
 
+function slackValidation (body, sendToRouter) {
+  if (!body.username) return sendToRouter(buildError(422, 'You must enter a username'))
+  if (!body.text) return sendToRouter(buildError(422, 'You must enter text'))
+  return true;
+}
+
 module.exports = {
   isString,
   checkArrString,
   buildError,
   contains,
   eventsValidation,
-  resourcesValidation
+  resourcesValidation,
+  slackValidation
 };

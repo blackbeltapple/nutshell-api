@@ -1,7 +1,8 @@
 const express = require('express');
 const {events, resources, tags} = require('.');
 const router = express.Router();
-const {getPolicy} = require('../controllers');
+const {getPolicy, sendMessage} = require('../controllers');
+
 
 
 router.use('/events', events);
@@ -10,6 +11,15 @@ router.use('/tags', tags);
 
 router.get('/s3policy', (req, res) => {
   res.json(getPolicy());
+})
+
+// Slack Integration
+
+router.post('/slack', function (req, res, next) {
+  sendMessage(req.body, function (err, message) {
+    if (err) return next(err)
+    res.status(200).json({message})
+  })
 })
 
 // ERROR HANDLING
