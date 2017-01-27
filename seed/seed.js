@@ -12,6 +12,26 @@ const resourceData = require('./data/resource.data');
 
 const DB = credentials.DB[process.env.NODE_ENV];
 
+const gen = function (num) {
+  var gen = num;
+  return function () {
+    gen += 3;
+    return gen
+  };
+};
+
+function RandomTag() {
+    return Math.floor(Math.random() * (18 - 0));
+}
+
+function getCategory() {
+  return Math.floor(Math.random() * (4 - 1) + 18);
+}
+
+var first = gen(-3);
+var second = gen(-2);
+var third = gen(-1);
+
 mongoose.connect(DB, function (err) {
   if (err) {
     console.log(`Error connecting to database ${DB}: ${err}`); // eslint-disable-line no-console
@@ -82,7 +102,7 @@ function addTags (done) {
 
 function addResources (theTags, done) {
   const resources = resourceData.map(r => Object.assign(r, {
-    tags: [theTags[1]._id, theTags[3]._id]
+    tags: [theTags[RandomTag()]._id, theTags[RandomTag()]._id, theTags[getCategory()]._id]
   }));
   async.map(resources, function (resource, cb) {
     var resourceDoc = new models.Resource(resource);
@@ -123,7 +143,7 @@ function addEvents (eventResources, done) {
       end_date: event.end_date,
       event_type: event.event_type,
       description: event.description,
-      resources: [eventResources.resources[3]._id, eventResources.resources[2]._id],
+      resources: [eventResources.resources[first()]._id, eventResources.resources[second()]._id, eventResources.resources[third()]._id],
       repo: event.repo,
       all_day: event.all_day,
       cohort: eventResources.cohort[0]._id,
