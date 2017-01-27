@@ -8,7 +8,7 @@ const bodyParser = require('body-parser');
 const passport = require('passport');
 
 const config = require('../config');
-const {Authentication} = require('../controllers');
+const {Authentication, sendMessage} = require('../controllers');
 const apiRouter = require('../routes/api.router');
 
 require('../services/passport');
@@ -44,6 +44,15 @@ app.get('/loggedin', requireAuth, function (req, res) {
 });
 app.post('/signup', Authentication.signup);
 app.post('/signin', requireSignin, Authentication.signin);
+
+// Slack Integration
+
+app.post('/slack', function (req, res, next) {
+  sendMessage(req.body, function (err, message) {
+    if (err) next(err)
+    res.status(200).json({message})
+  })
+})
 
 // Error handling routes
 
